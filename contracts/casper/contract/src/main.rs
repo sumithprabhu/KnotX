@@ -24,17 +24,8 @@ use casper_contract::contract_api::runtime::blake2b;
 use casper_types::{
     bytesrepr::{Bytes, ToBytes},
     contracts::{ContractHash, EntryPoint, EntryPoints},
-    runtime_args,
-    ApiError,
-    CLType,
-    CLValue,
-    EntryPointAccess,
-    EntryPointType,
-    NamedKeys,
-    Parameter,
-    PublicKey,
-    Signature,
-    URef,
+    runtime_args, ApiError, CLType, CLValue, EntryPointAccess, EntryPointType, NamedKeys,
+    Parameter, PublicKey, Signature, URef,
 };
 
 /// ------------------------------------------------
@@ -77,7 +68,7 @@ impl From<Error> for ApiError {
 pub extern "C" fn call() {
     let relayer_pubkey: Bytes = runtime::get_named_arg("relayer_pubkey");
 
-    if relayer_pubkey.len() != 64 {
+    if relayer_pubkey.len() != 33 {
         runtime::revert(Error::InvalidSignature);
     }
 
@@ -138,13 +129,8 @@ pub extern "C" fn call() {
     ));
 
     // Deploy contract
-    let (contract_hash, _) = storage::new_contract(
-        entry_points.into(),
-        Some(named_keys),
-        None,
-        None,
-        None,
-    );
+    let (contract_hash, _) =
+        storage::new_contract(entry_points.into(), Some(named_keys), None, None, None);
 
     runtime::put_key("knotx_gateway", contract_hash.into());
 }
@@ -211,8 +197,7 @@ pub extern "C" fn execute_message() {
     let message_key = message_key(&message_bytes);
     let executed = get_dictionary(KEY_EXECUTED_MESSAGES);
 
-    let seen: Option<bool> =
-        storage::dictionary_get(executed, &message_key).unwrap_or_revert();
+    let seen: Option<bool> = storage::dictionary_get(executed, &message_key).unwrap_or_revert();
 
     if seen == Some(true) {
         runtime::revert(Error::AlreadyExecuted);
@@ -251,14 +236,20 @@ pub extern "C" fn set_supported_chain() {
 
 /// Signature verification
 fn verify_relayer_signature(message: &[u8], signature: &[u8]) {
-    let pubkey_bytes: Bytes =
-        storage::read(get_uref(KEY_RELAYER_PUBKEY)).unwrap_or_revert().unwrap_or_revert();
+    let pubkey_bytes: Bytes = storage::read(get_uref(KEY_RELAYER_PUBKEY))
+        .unwrap_or_revert()
+        .unwrap_or_revert();
 
-    let pubkey = PublicKey::Secp256k1(pubkey_bytes.as_ref().try_into().unwrap());
+    let verifying_key = match pubkey_bytes.as_ref().try_into() {
+        Ok(key) => key,
+        Err(_) => runtime::revert(Error::InvalidSignature),
+    };
+
+    let pubkey = PublicKey::Secp256k1(verifying_key);
+
     let sig = Signature::Secp256k1(signature.try_into().unwrap());
 
-    verify_signature(message, &sig, &pubkey)
-        .unwrap_or_revert_with(Error::InvalidSignature);
+    verify_signature(message, &sig, &pubkey).unwrap_or_revert_with(Error::InvalidSignature);
 }
 
 /// Helpers

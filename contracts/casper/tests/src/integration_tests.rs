@@ -16,10 +16,16 @@ mod tests {
     use casper_types::URef;
     use casper_types::{bytesrepr::Bytes, runtime_args, ApiError, Key, StoredValue};
 
+    use k256::ecdsa::signature::Signer;
+    use k256::ecdsa::{Signature as K256Signature, SigningKey};
+    use rand_core::OsRng;
+
     const CONTRACT_WASM: &str = "contract.wasm";
+    const RECEIVER_WASM: &str = "receiver.wasm";
 
     const KEY_NONCE: &str = "nonce";
     const KEY_MESSAGES: &str = "messages";
+    const KEY_EXECUTED_MESSAGES: &str = "executed_messages";
 
     const CASPER_CHAIN_ID: u32 = 3;
     const DST_CHAIN_ID: u32 = 1;
@@ -33,7 +39,7 @@ mod tests {
             *DEFAULT_ACCOUNT_ADDR,
             CONTRACT_WASM,
             runtime_args! {
-                "relayer_pubkey" => Bytes::from(vec![1u8; 64]),
+                "relayer_pubkey" => Bytes::from(vec![1u8; 33]),
             },
         )
         .build();
@@ -43,6 +49,52 @@ mod tests {
         let account = builder
             .get_account(*DEFAULT_ACCOUNT_ADDR)
             .expect("account exists");
+
+        for (_name, key) in account.named_keys().iter() {
+            if let Key::Hash(hash) = key {
+                return ContractHash::new(*hash);
+            }
+        }
+
+        panic!("contract hash not found");
+    }
+
+    fn install_with_pubkey(
+        builder: &mut LmdbWasmTestBuilder,
+        relayer_pubkey: Bytes,
+    ) -> ContractHash {
+        let install = ExecuteRequestBuilder::standard(
+            *DEFAULT_ACCOUNT_ADDR,
+            CONTRACT_WASM,
+            runtime_args! {
+                "relayer_pubkey" => relayer_pubkey,
+            },
+        )
+        .build();
+
+        builder.exec(install).commit().expect_success();
+
+        let account = builder
+            .get_account(*DEFAULT_ACCOUNT_ADDR)
+            .expect("account exists");
+
+        for (_name, key) in account.named_keys().iter() {
+            if let Key::Hash(hash) = key {
+                return ContractHash::new(*hash);
+            }
+        }
+
+        panic!("contract hash not found");
+    }
+
+    fn install_receiver(builder: &mut LmdbWasmTestBuilder) -> ContractHash {
+        let install =
+            ExecuteRequestBuilder::standard(*DEFAULT_ACCOUNT_ADDR, RECEIVER_WASM, runtime_args! {})
+                .build();
+
+        builder.exec(install).commit().expect_success();
+
+        let account = builder.get_account(*DEFAULT_ACCOUNT_ADDR).expect("account");
 
         for (_name, key) in account.named_keys().iter() {
             if let Key::Hash(hash) = key {
@@ -121,6 +173,24 @@ mod tests {
             s.push(HEX[(b & 0xf) as usize] as char);
         }
         s
+    }
+
+    fn sign_message(message: &[u8]) -> (Bytes, Bytes) {
+        let signing_key = SigningKey::random(&mut OsRng);
+        let verify_key = signing_key.verifying_key();
+
+        let sig: K256Signature = signing_key.sign(message);
+
+        let pubkey = verify_key.to_encoded_point(false);
+        let pubkey_bytes = Bytes::from(verify_key.to_encoded_point(true).as_bytes().to_vec());
+        let sig_bytes = Bytes::from(sig.to_bytes().to_vec());
+
+        (pubkey_bytes, sig_bytes)
+    }
+
+    fn message_key(message: &[u8]) -> String {
+        let digest = blake2b(message);
+        hex::encode(digest)
     }
 
     // ------------------------------------------------
@@ -252,9 +322,69 @@ mod tests {
             .into_t::<Bytes>()
             .expect("bytes");
 
-        println!("Stored message (hex): {}", hex(stored.as_ref()));
-        println!("Stored message (raw): {:?}", stored.as_ref());
-
         assert_eq!(stored.as_ref(), message_bytes);
+    }
+
+    #[test]
+    fn execute_message_marks_message_as_expected() {
+        let mut builder = LmdbWasmTestBuilder::default();
+        builder.run_genesis(LOCAL_GENESIS_REQUEST.clone()).commit();
+
+        let receiver_contract = install_receiver(&mut builder);
+        let receiver = Bytes::from(receiver_contract.value().to_vec());
+
+        let payload = Bytes::from(vec![1, 2, 3]);
+
+        let message = build_message_bytes(
+            1,
+            CASPER_CHAIN_ID,
+            &[9u8; 32],
+            receiver.as_ref(),
+            0,
+            payload.as_ref(),
+        );
+
+        let (relayer_pubkey, signature) = sign_message(&message);
+        let contract = install_with_pubkey(&mut builder, relayer_pubkey.clone());
+
+        let call = ExecuteRequestBuilder::contract_call_by_hash(
+            *DEFAULT_ACCOUNT_ADDR,
+            contract.into(),
+            "execute_message",
+            runtime_args! {
+                "src_chain_id" => 1u32,
+                "src_gateway" => Bytes::from(vec![9u8; 32]),
+                "receiver" => receiver,
+                "nonce" => 0u64,
+                "payload" => payload,
+                "signature" => signature,
+            },
+        )
+        .build();
+
+        builder.exec(call).commit().expect_success();
+
+        let digest = blake2b(&message);
+        let key = hex(&digest);
+
+        let contract = builder.get_contract(contract).expect("contract");
+
+        let messages_uref = contract
+            .named_keys()
+            .get("executed_messages")
+            .expect("messages named key")
+            .into_uref()
+            .expect("messages should be URef");
+
+        let executed = builder
+            .query_dictionary_item(None, messages_uref, &key)
+            .expect("dictionary item")
+            .as_cl_value()
+            .expect("cl value")
+            .clone()
+            .into_t::<bool>()
+            .expect("bool");
+
+        assert!(executed);
     }
 }

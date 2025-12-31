@@ -1762,6 +1762,9 @@ dependencies = [
  "casper-engine-test-support",
  "casper-execution-engine",
  "casper-types",
+ "hex",
+ "k256",
+ "rand_core 0.6.4",
 ]
 
 [[package]]

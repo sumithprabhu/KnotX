@@ -16,3 +16,7 @@ path = "src/integration_tests.rs"
 bench = false
 doctest = false
 
+[dependencies]
+k256 = { version = "0.13", default-features = false, features = ["ecdsa"] }
+rand_core = "0.6"
+hex = "0.4"
