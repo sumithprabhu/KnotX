@@ -387,4 +387,61 @@ mod tests {
 
         assert!(executed);
     }
+
+    #[test]
+    fn execute_message_increments_receiver_counter() {
+        let mut builder = LmdbWasmTestBuilder::default();
+        builder.run_genesis(LOCAL_GENESIS_REQUEST.clone()).commit();
+
+        // Install receiver
+        let receiver_contract = install_receiver(&mut builder);
+        let receiver = Bytes::from(receiver_contract.value().to_vec());
+
+        let payload = Bytes::from(vec![1, 2, 3]);
+
+        let message = build_message_bytes(
+            1,
+            CASPER_CHAIN_ID,
+            &[9u8; 32],
+            receiver.as_ref(),
+            0,
+            payload.as_ref(),
+        );
+
+        let (relayer_pubkey, signature) = sign_message(&message);
+        let gateway = install_with_pubkey(&mut builder, relayer_pubkey);
+
+        let call = ExecuteRequestBuilder::contract_call_by_hash(
+            *DEFAULT_ACCOUNT_ADDR,
+            gateway.into(),
+            "execute_message",
+            runtime_args! {
+                "src_chain_id" => 1u32,
+                "src_gateway" => Bytes::from(vec![9u8; 32]),
+                "receiver" => receiver,
+                "nonce" => 0u64,
+                "payload" => payload,
+                "signature" => signature,
+            },
+        )
+        .build();
+
+        builder.exec(call).commit().expect_success();
+
+        // Read receiver counter
+        let counter: u64 = builder
+            .query(
+                None,
+                Key::Hash(receiver_contract.value()),
+                &["count".to_string()],
+            )
+            .unwrap()
+            .as_cl_value()
+            .unwrap()
+            .clone()
+            .into_t()
+            .unwrap();
+
+        assert_eq!(counter, 1);
+    }
 }
