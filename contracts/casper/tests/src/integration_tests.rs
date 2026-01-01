@@ -272,7 +272,7 @@ mod tests {
     }
 
     #[test]
-    fn send_message_stores_message_by_message_id() {
+    fn send_message_stores_message_by_nonce() {
         let mut builder = LmdbWasmTestBuilder::default();
         builder.run_genesis(LOCAL_GENESIS_REQUEST.clone()).commit();
 
@@ -302,7 +302,7 @@ mod tests {
 
         // Dictionary keys must be short → hash
         let digest = blake2b(&message_bytes);
-        let message_id = hex(&digest);
+        let message_id = "0";
 
         let contract = builder.get_contract(contract).expect("contract");
 

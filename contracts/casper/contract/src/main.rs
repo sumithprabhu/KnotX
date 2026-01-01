@@ -155,8 +155,7 @@ pub extern "C" fn send_message() {
 
     let nonce_ref = get_uref(KEY_NONCE);
     let nonce: u64 = storage::read(nonce_ref).unwrap_or_revert().unwrap_or(0);
-    storage::write(nonce_ref, nonce + 1);
-
+    
     let message_bytes = build_message_bytes(
         CASPER_CHAIN_ID,
         dst_chain_id,
@@ -166,9 +165,15 @@ pub extern "C" fn send_message() {
         payload.as_ref(),
     );
 
-    let key = message_key(&message_bytes);
     let messages = get_dictionary(KEY_MESSAGES);
-    storage::dictionary_put(messages, &key, Bytes::from(message_bytes.clone()));
+
+    storage::dictionary_put(
+        messages,
+        &nonce.to_string(),
+        Bytes::from(message_bytes.clone()),
+    );
+
+    storage::write(nonce_ref, nonce + 1);
 
     runtime::ret(CLValue::from_t(Bytes::from(message_bytes)).unwrap_or_revert());
 }
