@@ -2,6 +2,8 @@
   display: flex;
   align-items: center;
   gap: 0;
+  text-decoration: none;
+  margin-left: 1rem;
 }
 
 .knotText {
@@ -11,7 +13,7 @@
   margin-right: -4px;
 }
 
-.logoWrapper :global(.navbar__logo) {
+.logoImage {
   margin-left: -4px;
   filter: brightness(1.1) contrast(1.1);
   height: 32px;
