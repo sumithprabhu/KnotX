@@ -24,8 +24,8 @@ contract UniversalCounter is IKnotXReceiver {
 
     function onCall(
         uint32 srcChainId,
-        address,
-        bytes calldata payload
+        bytes memory sender,
+        bytes memory payload
     ) external override onlyGateway {
         uint256 amount = abi.decode(payload, (uint256));
 

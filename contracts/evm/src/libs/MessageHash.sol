@@ -5,7 +5,7 @@ library MessageHash {
     function compute(
         uint32 srcChainId,
         uint32 dstChainId,
-        address srcGateway,
+        bytes memory srcGateway,
         bytes memory receiver,
         uint64 nonce,
         bytes memory payload
