@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "npm run docs:build && next build --webpack",
-    "dev": "npm run docs:build && next dev --webpack",
+    "build": "npm run docs:install && npm run docs:build && next build --webpack",
+    "dev": "npm run docs:install && npm run docs:build && next dev --webpack",
     "dev:watch": "next dev --webpack",
+    "docs:install": "cd docs && npm install",
     "docs:dev": "cd docs && npm start",
     "docs:build": "cd docs && npm run build",
     "lint": "eslint .",
