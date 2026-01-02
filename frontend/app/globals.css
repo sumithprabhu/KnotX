@@ -1,0 +1,111 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Dark Theme Colors from Landing Page */
+  --background: 210 11% 7%; /* #0f1211 */
+  --foreground: 160 14% 93%; /* #e7eceb */
+
+  --muted: 240 2% 16%; /* #27272a */
+  --muted-foreground: 160 14% 93% / 0.7; /* rgba(231, 236, 235, 0.7) */
+  --muted-foreground-light: 160 14% 93% / 0.5; /* rgba(231, 236, 235, 0.5) */
+  --muted-foreground-dark: 160 14% 93% / 0.6; /* rgba(231, 236, 235, 0.6) */
+
+  --card: 220 17% 98% / 0.01;
+  --card-foreground: 160 14% 93%;
+
+  --popover: 210 11% 7%;
+  --popover-foreground: 160 14% 93%;
+
+  /* Primary Accent Colors - Logo Color #6efcd9 */
+  --primary: 165 95% 71%; /* #6efcd9 */
+  --primary-foreground: 0 0% 0%; /* Black */
+  --primary-dark: 165 95% 60%; /* Darker shade */
+  --primary-light: 165 95% 80%; /* Lighter shade */
+  --logo-color: 165 95% 71%; /* #6efcd9 */
+
+  /* Secondary Accent Colors (for buttons, etc.) */
+  --secondary: 160 14% 93%; /* #e7eceb */
+  --secondary-foreground: 165 14% 8%; /* #141a18 */
+
+  --accent: 240 2% 25%; /* #3f3f42 */
+  --accent-foreground: 240 2% 96%; /* #f4f4f5 */
+
+  --border: 240 100% 100% / 0.08; /* rgba(255, 255, 255, 0.08) */
+  --border-light: 210 17% 6% / 0.1; /* rgba(16,24,40,0.1) */
+  --border-dark: 210 17% 6% / 0.05; /* rgba(16,24,40,0.05) */
+
+  --ring: 165 96% 71%;
+
+  --radius: 0.5rem;
+  
+  /* Additional variables for compatibility */
+  --input: 240 2% 16%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --chart-1: 165 96% 71%;
+  --chart-2: 160 48% 87%;
+  --chart-3: 160 100% 50%;
+  --chart-4: 165 14% 8%;
+  --chart-5: 240 2% 25%;
+  --sidebar: 210 11% 7%;
+  --sidebar-foreground: 160 14% 93%;
+  --sidebar-primary: 165 96% 71%;
+  --sidebar-primary-foreground: 160 8% 6%;
+  --sidebar-accent: 240 2% 16%;
+  --sidebar-accent-foreground: 160 14% 93%;
+  --sidebar-border: 240 100% 100% / 0.08;
+  --sidebar-ring: 165 96% 71%;
+}
+
+@theme inline {
+  --font-sans: "Geist", "Geist Fallback";
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

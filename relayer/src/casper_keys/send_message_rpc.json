@@ -1,0 +1,113 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "account_put_deploy",
+  "params": {
+    "deploy": {
+  "hash": "98d92eb7f19b7df9843768fd75095c51deefdbbc034ba542876c043df8a9e73b",
+  "header": {
+    "account": "01fe42cc552715410ebf50272ba0ba7696a44ff0690019f9ab2507365ca9ca5fc1",
+    "timestamp": "2025-12-31T12:27:57.423Z",
+    "ttl": "30m",
+    "gas_price": 1,
+    "body_hash": "5f1911c42348ac857c7e19bcf5098e649d13bf88804ff02943f9e768169d8ad0",
+    "dependencies": [],
+    "chain_name": "casper-test"
+  },
+  "payment": {
+    "ModuleBytes": {
+      "module_bytes": "",
+      "args": [
+        [
+          "amount",
+          {
+            "cl_type": "U512",
+            "bytes": "04005ed0b2",
+            "parsed": "3000000000"
+          }
+        ]
+      ]
+    }
+  },
+  "session": {
+    "StoredContractByHash": {
+      "hash": "c6c40d1d0d05dc8aefc3ce67adadfc6ca658dd401fe761ca4693be77fba81443",
+      "entry_point": "send_message",
+      "args": [
+        [
+          "dst_chain_id",
+          {
+            "cl_type": "U32",
+            "bytes": "a736aa00",
+            "parsed": 11155111
+          }
+        ],
+        [
+          "receiver",
+          {
+            "cl_type": {
+              "List": "U8"
+            },
+            "bytes": "200000000909090909090909090909090909090909090909090909090909090909090909",
+            "parsed": [
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9
+            ]
+          }
+        ],
+        [
+          "payload",
+          {
+            "cl_type": {
+              "List": "U8"
+            },
+            "bytes": "03000000010203",
+            "parsed": [
+              1,
+              2,
+              3
+            ]
+          }
+        ]
+      ]
+    }
+  },
+  "approvals": [
+    {
+      "signer": "01fe42cc552715410ebf50272ba0ba7696a44ff0690019f9ab2507365ca9ca5fc1",
+      "signature": "01efa60fed4726110b450c66c93b00675f3db850637cdc0a56869737781c3630013d04e987851af8be9d1f838ba97bb85523dcfa5870c5708f937e4772f3145402"
+    }
+  ]
+}
+  }
+}

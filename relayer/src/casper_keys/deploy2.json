@@ -1,0 +1,57 @@
+{
+  "hash": "f83a5a3048058f260c5a10b8f3e5fedac5be439869630dfdcceead8ed436aba9",
+  "header": {
+    "account": "01fe42cc552715410ebf50272ba0ba7696a44ff0690019f9ab2507365ca9ca5fc1",
+    "timestamp": "2025-12-31T12:22:12.308Z",
+    "ttl": "30m",
+    "gas_price": 1,
+    "body_hash": "7f3f0fc95f473a9dcbad66e1379db039d5578e17aaa4d2ff0c7bc60b2cbcc545",
+    "dependencies": [],
+    "chain_name": "casper-test"
+  },
+  "payment": {
+    "ModuleBytes": {
+      "module_bytes": "",
+      "args": [
+        [
+          "amount",
+          {
+            "cl_type": "U512",
+            "bytes": "04005ed0b2",
+            "parsed": "3000000000"
+          }
+        ]
+      ]
+    }
+  },
+  "session": {
+    "StoredContractByHash": {
+      "hash": "c6c40d1d0d05dc8aefc3ce67adadfc6ca658dd401fe761ca4693be77fba81443",
+      "entry_point": "set_supported_chain",
+      "args": [
+        [
+          "chain_id",
+          {
+            "cl_type": "U32",
+            "bytes": "a736aa00",
+            "parsed": 11155111
+          }
+        ],
+        [
+          "supported",
+          {
+            "cl_type": "Bool",
+            "bytes": "01",
+            "parsed": true
+          }
+        ]
+      ]
+    }
+  },
+  "approvals": [
+    {
+      "signer": "01fe42cc552715410ebf50272ba0ba7696a44ff0690019f9ab2507365ca9ca5fc1",
+      "signature": "01d9caa7c9c7215d6d042cf392259bae477644cb49cecc9a9176a214246585a96ab3e6f4e698f429624d72668580e46d8e077a59b7af4e202330f84315c2b71e0c"
+    }
+  ]
+}
