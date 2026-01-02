@@ -1,0 +1,23 @@
+{
+  "id": "guides/sending-messages",
+  "title": "Sending Messages",
+  "description": "Sending messages across chains is straightforward. You need to call the gateway contract on your source chain with the destination chain ID, receiver address, and payload.",
+  "source": "@site/docs/guides/sending-messages.md",
+  "sourceDirName": "guides",
+  "slug": "/guides/sending-messages",
+  "permalink": "/docs/guides/sending-messages",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "messaging",
+  "previous": {
+    "title": "Get Started",
+    "permalink": "/docs/get-started"
+  },
+  "next": {
+    "title": "Receiving Messages",
+    "permalink": "/docs/guides/receiving-messages"
+  }
+}

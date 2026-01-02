@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
 
 export function CTASection() {
   return (
@@ -104,20 +103,18 @@ export function CTASection() {
       <div className="relative z-10 flex flex-col justify-start items-center gap-9 max-w-4xl mx-auto">
         <div className="flex flex-col justify-start items-center gap-4 text-center">
           <h2 className="text-foreground text-4xl md:text-5xl lg:text-[68px] font-semibold leading-tight md:leading-tight lg:leading-[76px] break-words max-w-[600px]">
-            Turn your drives into rewards
+            Build the future of cross-chain
           </h2>
           <p className="text-muted-foreground text-sm md:text-base font-medium leading-[18.20px] md:leading-relaxed break-words max-w-2xl">
-            Join thousands of drivers contributing their dashcam footage to build AI datasets. Get rewarded for every video that powers AI research and model training.
+            Join developers and teams building the next generation of interoperable applications. Connect your projects across blockchains with KnotX's secure, reliable protocol.
           </p>
         </div>
-        <Link href="/login">
-          <Button
-            className="px-[30px] py-2 bg-secondary text-secondary-foreground text-base font-medium leading-6 rounded-[99px] shadow-[0px_0px_0px_4px_rgba(255,255,255,0.13)] hover:bg-secondary/90 transition-all duration-200"
-            size="lg"
-          >
-            Get Started
-          </Button>
-        </Link>
+        <Button
+          className="px-[30px] py-2 bg-secondary text-secondary-foreground text-base font-medium leading-6 rounded-[99px] shadow-[0px_0px_0px_4px_rgba(255,255,255,0.13)] hover:bg-secondary/90 transition-all duration-200"
+          size="lg"
+        >
+          Get Started
+        </Button>
       </div>
     </section>
   )

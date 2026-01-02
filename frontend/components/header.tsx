@@ -2,7 +2,7 @@
 
 import type React from "react"
 import Image from "next/image"
-import { usePrivy } from "@privy-io/react-auth"
+import { usePathname } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
@@ -10,11 +10,12 @@ import { Menu } from "lucide-react"
 import Link from "next/link" // Import Link for client-side navigation
 
 export function Header() {
-  const { authenticated, login } = usePrivy()
-
-  const navItems = [
-    { name: "Features", href: "#features-section" },
-  ]
+  const pathname = usePathname()
+  const isDocsPage = pathname?.startsWith("/docs")
+  
+  const navItems = isDocsPage 
+    ? [] 
+    : [{ name: "Features", href: "#features-section" }]
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
@@ -25,17 +26,15 @@ export function Header() {
     }
   }
 
-  const handleLogin = () => {
-    login()
-  }
-
   return (
     <header className="w-full py-4 px-6">
       <div className="max-w-[90%] mx-auto flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Dashmint" width={32} height={32} className="h-8 w-8" />
-            <span className="text-foreground text-xl font-semibold">Dashmint</span>
+          <div className="flex items-center gap-2">
+            <span className="text-foreground text-xl font-semibold flex items-center">
+              <span>Knot</span>
+              <Image src="/logo.png" alt="X" width={30} height={30} className="inline-block h-10 w-10 -ml-1 brightness-110 contrast-110" />
+            </span>
           </div>
           <nav className="hidden md:flex items-center gap-2">
             {navItems.map((item) => (
@@ -51,20 +50,11 @@ export function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          {authenticated ? (
-            <Link href="/app" className="hidden md:block">
-              <Button className="bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-110 px-6 py-2 rounded-full font-medium shadow-sm transition-transform duration-200">
-                Dashboard
-              </Button>
-            </Link>
-          ) : (
-            <Button
-              onClick={handleLogin}
-              className="hidden md:block bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-110 px-6 py-2 rounded-full font-medium shadow-sm transition-transform duration-200"
-            >
-              Login
-            </Button>
-          )}
+          <Button
+            className="hidden md:block bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-110 px-6 py-2 rounded-full font-medium shadow-sm transition-transform duration-200"
+          >
+            Get Started
+          </Button>
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="text-foreground">
@@ -87,20 +77,11 @@ export function Header() {
                     {item.name}
                   </Link>
                 ))}
-                {authenticated ? (
-                  <Link href="/app" className="w-full mt-4">
-                    <Button className="bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-105 px-6 py-2 rounded-full font-medium shadow-sm w-full transition-transform duration-200">
-                      Dashboard
-                    </Button>
-                  </Link>
-                ) : (
-                  <Button
-                    onClick={handleLogin}
-                    className="bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-105 px-6 py-2 rounded-full font-medium shadow-sm w-full mt-4 transition-transform duration-200"
-                  >
-                    Login
-                  </Button>
-                )}
+                <Button
+                  className="bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-105 px-6 py-2 rounded-full font-medium shadow-sm w-full mt-4 transition-transform duration-200"
+                >
+                  Get Started
+                </Button>
               </nav>
             </SheetContent>
           </Sheet>

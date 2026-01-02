@@ -1,0 +1,23 @@
+{
+  "id": "concepts/message-flow",
+  "title": "Message Flow",
+  "description": "Understanding the complete message flow helps you build reliable cross-chain applications. Here's the step-by-step process:",
+  "source": "@site/docs/concepts/message-flow.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/message-flow",
+  "permalink": "/docs/concepts/message-flow",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "messaging",
+  "previous": {
+    "title": "Architecture",
+    "permalink": "/docs/concepts/architecture"
+  },
+  "next": {
+    "title": "Security Model",
+    "permalink": "/docs/concepts/security-model"
+  }
+}

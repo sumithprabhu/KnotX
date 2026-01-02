@@ -1,7 +1,7 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { Header } from "./header"
-import Link from "next/link"
+import { Globe } from "@/components/ui/globe"
 
 export function HeroSection() {
   return (
@@ -437,21 +437,26 @@ export function HeroSection() {
         <Header />
       </div>
 
-      <div className="relative z-10 space-y-4 md:space-y-5 lg:space-y-6 mb-6 md:mb-7 lg:mb-9 max-w-2xl md:max-w-3xl lg:max-w-4xl mt-16 md:mt-[120px] lg:mt-[160px] px-4">
-        <h1 className="text-foreground text-3xl md:text-4xl lg:text-6xl font-semibold leading-tight whitespace-nowrap">
-          <span className="block whitespace-normal">Preserve Your Drive.</span>
-          <span className="block whitespace-normal">Power the Future of AI.</span>
-        </h1>
-        <p className="text-muted-foreground text-base md:text-base lg:text-lg font-medium leading-relaxed max-w-lg mx-auto">
-          Record your videos, register ownership with Story Protocol, and earn points as AI companies use your data to train the next generation of intelligent models.
-        </p>
-      </div>
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 w-full max-w-7xl mx-auto mt-16 md:mt-[120px] lg:mt-[160px] px-4">
+        {/* Text Content */}
+        <div className="flex-1 space-y-4 md:space-y-5 lg:space-y-6 text-center md:text-left">
+          <h1 className="text-foreground text-3xl md:text-4xl lg:text-6xl font-semibold leading-tight whitespace-nowrap">
+            <span className="block whitespace-normal">Connecting value</span>
+            <span className="block whitespace-normal">across networks</span>
+          </h1>
+          <p className="text-muted-foreground text-base md:text-base lg:text-lg font-medium leading-relaxed max-w-lg md:max-w-none mx-auto md:mx-0">
+            KnotX is the leading interoperability platform connecting traditional finance and the internet economy. Seamlessly bridge assets and data across blockchains and networks.
+          </p>
+          <Button className="bg-white text-black hover:bg-gray-100 hover:scale-110 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-transform duration-200">
+            Get Started
+          </Button>
+        </div>
 
-      <Link href="/app">
-        <Button className="relative z-10 bg-white text-black hover:bg-gray-100 hover:scale-110 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-transform duration-200">
-          Start Contributing
-        </Button>
-      </Link>
+        {/* Globe Component - positioned beside content, showing top visible, bottom cropped */}
+        <div className="flex-1 w-full min-w-[400px] md:min-w-[500px] lg:min-w-[600px] max-w-[600px] md:max-w-[700px] lg:max-w-[800px] h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden relative">
+          <Globe className="!max-w-none" />
+        </div>
+      </div>
     </section>
   )
 }

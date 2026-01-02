@@ -1,0 +1,23 @@
+{
+  "id": "concepts/security-model",
+  "title": "Security Model",
+  "description": "KnotX implements multiple layers of security to ensure message integrity and prevent attacks.",
+  "source": "@site/docs/concepts/security-model.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/security-model",
+  "permalink": "/docs/concepts/security-model",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "messaging",
+  "previous": {
+    "title": "Message Flow",
+    "permalink": "/docs/concepts/message-flow"
+  },
+  "next": {
+    "title": "Relayer System",
+    "permalink": "/docs/concepts/relayer-system"
+  }
+}

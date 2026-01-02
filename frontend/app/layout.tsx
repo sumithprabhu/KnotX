@@ -3,16 +3,14 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
-import { PrivyAuthProvider } from "@/components/privy-provider"
-import { UserProvider } from "@/contexts/user-context"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Dashmint - Dashcam Video Platform",
-  description: "Upload your dashcam footage, help build AI datasets, and get rewarded. Contribute to AI research while earning points for your driving data.",
+  title: "KnotX - Connecting Value Across Networks",
+  description: "KnotX is the leading interoperability platform connecting value across networks. Seamlessly bridge assets and data across blockchains and traditional systems.",
   generator: "v0.app",
   icons: {
     icon: [
@@ -33,13 +31,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans antialiased`}>
-        <PrivyAuthProvider>
-          <UserProvider>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           {children}
         </ThemeProvider>
-          </UserProvider>
-        </PrivyAuthProvider>
         <Analytics />
       </body>
     </html>

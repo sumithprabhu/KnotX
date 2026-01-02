@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { Twitter, Github, Linkedin } from "lucide-react"
 
 export function FooterSection() {
@@ -8,11 +9,13 @@ export function FooterSection() {
     <footer className="w-full max-w-[1320px] mx-auto px-5 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-0 py-10 md:py-[70px]">
       {/* Left Section: Logo, Description, Social Links */}
       <div className="flex flex-col justify-start items-start gap-8 p-4 md:p-8">
-        <div className="flex gap-3 items-center justify-center">
-          <Image src="/logo.png" alt="Dashmint" width={32} height={32} className="h-8 w-8" />
-          <div className="text-center text-foreground text-xl font-semibold leading-4">Dashmint</div>
+        <div className="flex gap-2 items-center justify-center">
+          <div className="text-center text-foreground text-xl font-semibold leading-4 flex items-center">
+            <span>Knot</span>
+            <Image src="/logo.png" alt="X" width={40} height={40} className="inline-block h-10 w-10 -ml-1 brightness-110 contrast-110" />
+          </div>
         </div>
-        <p className="text-foreground/90 text-sm font-medium leading-[18px] text-left">Turn your drives into rewards</p>
+        <p className="text-foreground/90 text-sm font-medium leading-[18px] text-left">Connecting value across networks</p>
         <div className="flex justify-start items-start gap-3">
           <a href="#" aria-label="Twitter" className="w-4 h-4 flex items-center justify-center">
             <Twitter className="w-full h-full text-muted-foreground" />
@@ -55,11 +58,11 @@ export function FooterSection() {
             <a href="#" className="text-foreground text-sm font-normal leading-5 hover:underline">
               Terms of use
             </a>
+            <Link href="/docs" className="text-foreground text-sm font-normal leading-5 hover:underline">
+              Documentation
+            </Link>
             <a href="#" className="text-foreground text-sm font-normal leading-5 hover:underline">
               API Reference
-            </a>
-            <a href="#" className="text-foreground text-sm font-normal leading-5 hover:underline">
-              Documentation
             </a>
             <a href="#" className="text-foreground text-sm font-normal leading-5 hover:underline">
               Community

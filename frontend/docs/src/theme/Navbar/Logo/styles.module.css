@@ -1,0 +1,20 @@
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.knotText {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ifm-navbar-foreground);
+  margin-right: -4px;
+}
+
+.logoWrapper :global(.navbar__logo) {
+  margin-left: -4px;
+  filter: brightness(1.1) contrast(1.1);
+  height: 32px;
+  width: 32px;
+}
+

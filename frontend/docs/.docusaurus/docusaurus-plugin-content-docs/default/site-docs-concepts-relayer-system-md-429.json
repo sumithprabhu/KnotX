@@ -1,0 +1,23 @@
+{
+  "id": "concepts/relayer-system",
+  "title": "Relayer System",
+  "description": "The relayer is a critical component that bridges messages between chains. It operates as a service that monitors source chains and delivers messages to destination chains.",
+  "source": "@site/docs/concepts/relayer-system.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/relayer-system",
+  "permalink": "/docs/concepts/relayer-system",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "messaging",
+  "previous": {
+    "title": "Security Model",
+    "permalink": "/docs/concepts/security-model"
+  },
+  "next": {
+    "title": "Tutorial",
+    "permalink": "/docs/tutorial"
+  }
+}

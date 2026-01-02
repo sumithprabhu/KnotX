@@ -1,0 +1,23 @@
+{
+  "id": "guides/message-format",
+  "title": "Message Format",
+  "description": "Messages in KnotX follow a standardized format to ensure compatibility across all supported chains.",
+  "source": "@site/docs/guides/message-format.md",
+  "sourceDirName": "guides",
+  "slug": "/guides/message-format",
+  "permalink": "/docs/guides/message-format",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "messaging",
+  "previous": {
+    "title": "Receiving Messages",
+    "permalink": "/docs/guides/receiving-messages"
+  },
+  "next": {
+    "title": "Error Handling",
+    "permalink": "/docs/guides/error-handling"
+  }
+}

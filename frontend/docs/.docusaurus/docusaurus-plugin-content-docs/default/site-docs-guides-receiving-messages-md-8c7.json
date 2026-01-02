@@ -1,0 +1,23 @@
+{
+  "id": "guides/receiving-messages",
+  "title": "Receiving Messages",
+  "description": "To receive messages, your contract must implement the IKnotXReceiver interface. The gateway will call your contract's onCall function when a message arrives.",
+  "source": "@site/docs/guides/receiving-messages.md",
+  "sourceDirName": "guides",
+  "slug": "/guides/receiving-messages",
+  "permalink": "/docs/guides/receiving-messages",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "messaging",
+  "previous": {
+    "title": "Sending Messages",
+    "permalink": "/docs/guides/sending-messages"
+  },
+  "next": {
+    "title": "Message Format",
+    "permalink": "/docs/guides/message-format"
+  }
+}

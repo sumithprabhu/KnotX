@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run docs:build && npm run build",
+  "outputDirectory": ".next",
+  "rewrites": [
+    {
+      "source": "/docs/:path*",
+      "destination": "/docs-static/:path*"
+    }
+  ]
+}
+
+

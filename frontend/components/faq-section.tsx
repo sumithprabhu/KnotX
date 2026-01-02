@@ -6,34 +6,34 @@ import { ChevronDown } from "lucide-react"
 
 const faqData = [
   {
-    question: "What is Dashmint and how does it work?",
+    question: "What is KnotX and how does it work?",
     answer:
-      "Dashmint is a platform that allows you to record or upload your dashcam footage and contribute to AI research campaigns. Your videos are instantly registered on-chain with Story Protocol, securing your intellectual property rights. You earn points and rewards every time your footage is used for AI model training or research projects.",
+      "KnotX is an interoperability protocol that enables secure communication and asset transfers between different blockchain networks. It acts as a universal bridge, allowing developers and users to seamlessly move data, tokens, and execute cross-chain smart contracts across EVM, non-EVM, and traditional systems with cryptographic security guarantees.",
   },
   {
-    question: "How do I submit my dashcam videos?",
+    question: "Which blockchains does KnotX support?",
     answer:
-      "You can either record videos directly from your phone through our app or upload pre-recorded clips from your dashcam. Simply join an active campaign, record or upload your video with location and timestamp data, and submit it. Your video will be uploaded to IPFS and registered on-chain automatically.",
+      "KnotX supports a wide range of blockchain networks including Ethereum, Solana, Casper, and other major chains. Our protocol is designed to be chain-agnostic, meaning we can integrate with any blockchain that supports our message passing interface. We continuously expand our network coverage based on community demand.",
   },
   {
-    question: "How is my video protected and who owns it?",
+    question: "How secure is KnotX?",
     answer:
-      "Your videos are instantly secured with Story Protocol, which creates an on-chain record of your ownership. This verifies your intellectual property rights forever. You maintain ownership of your content, and AI companies can only use it with your explicit consent through our transparent rights system.",
+      "KnotX uses cryptographic proofs and consensus mechanisms to ensure the security of all cross-chain transactions. Our protocol has been audited by leading security firms and uses battle-tested cryptographic primitives. All messages are verified on-chain before execution, providing strong security guarantees without relying on trusted intermediaries.",
   },
   {
-    question: "How do I earn rewards and points?",
+    question: "How do I integrate KnotX into my application?",
     answer:
-      "You earn points automatically every time your footage powers AI research or model training projects. Points are awarded based on video quality, campaign participation, and usage. You can track your earnings in real-time through your profile dashboard and see exactly how your data is being used.",
+      "KnotX provides comprehensive SDKs and developer tools for easy integration. You can use our JavaScript, Python, or Rust SDKs to send messages and execute cross-chain operations. Our documentation includes code examples, API references, and step-by-step guides to get you started quickly.",
   },
   {
-    question: "Is my data private and secure?",
+    question: "What are the costs for using KnotX?",
     answer:
-      "Yes, absolutely. All data is handled with full transparency and user consent. Your videos are stored securely on IPFS, and we use legally safe, consent-backed data practices. AI developers can only access your footage through our transparent rights system, ensuring you always know how your data is being used.",
+      "Transaction costs vary based on the networks involved and gas prices at the time of execution. KnotX charges minimal protocol fees to maintain the network infrastructure. You'll pay standard gas fees on the source and destination chains, plus a small protocol fee. Exact costs are displayed before transaction confirmation.",
   },
   {
-    question: "Who can use my dashcam footage?",
+    question: "Can KnotX handle high-volume transactions?",
     answer:
-      "AI companies and researchers can access cleaned, structured real-world driving data through our platform. However, they can only use your footage with your explicit consent, and all usage is tracked transparently. The data is provided in a structured format ready for vision and mapping models, while maintaining your ownership rights.",
+      "Yes, KnotX is built for production workloads and can handle high transaction volumes. Our infrastructure is designed with scalability in mind, using efficient message routing and batching techniques. We support both individual transactions and bulk operations for enterprise use cases.",
   },
 ]
 
@@ -99,7 +99,7 @@ export function FAQSection() {
             Frequently Asked Questions
           </h2>
           <p className="self-stretch text-center text-muted-foreground text-sm font-medium leading-[18.20px] break-words">
-            Everything you need to know about Dashmint and how to monetize your dashcam footage
+            Everything you need to know about KnotX and cross-chain interoperability
           </p>
         </div>
       </div>

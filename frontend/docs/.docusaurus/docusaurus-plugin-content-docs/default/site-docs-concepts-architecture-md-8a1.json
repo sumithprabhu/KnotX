@@ -1,0 +1,23 @@
+{
+  "id": "concepts/architecture",
+  "title": "Architecture",
+  "description": "KnotX uses a gateway-based architecture where each supported chain has a gateway contract that handles message sending and receiving. A decentralized relayer network ensures message delivery between chains.",
+  "source": "@site/docs/concepts/architecture.md",
+  "sourceDirName": "concepts",
+  "slug": "/concepts/architecture",
+  "permalink": "/docs/concepts/architecture",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "messaging",
+  "previous": {
+    "title": "Error Handling",
+    "permalink": "/docs/guides/error-handling"
+  },
+  "next": {
+    "title": "Message Flow",
+    "permalink": "/docs/concepts/message-flow"
+  }
+}

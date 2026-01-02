@@ -1,0 +1,125 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+.pnp.*
+yarn-error.log
+npm-debug.log*
+lerna-debug.log*
+
+# Testing
+/coverage
+*.lcov
+.nyc_output
+
+# Next.js
+.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Production builds
+/build
+/dist
+/.next
+/out
+
+# Misc
+.DS_Store
+*.pem
+*.log
+*.lock
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Local env files
+.env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Docusaurus
+docs/build/
+docs/.docusaurus/
+docs/.cache-loader/
+public/docs-static/
+
+# Frontend specific
+frontend/.next/
+frontend/out/
+frontend/.vercel
+frontend/public/docs-static/
+
+# Backend/Relayer
+relayer/node_modules/
+relayer/.env
+relayer/.env.local
+relayer/dist/
+relayer/build/
+relayer/logs/
+relayer/*.log
+
+# Contracts
+contracts/**/node_modules/
+contracts/**/artifacts/
+contracts/**/cache/
+contracts/**/typechain/
+contracts/**/typechain-types/
+contracts/**/coverage/
+contracts/**/coverage.json
+contracts/**/*.sol.js
+contracts/**/*.sol.ts
+
+# Casper specific
+*.wasm
+casper_keys/*.json
+!casper_keys/deploy.json.example
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+mongodb-data/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+tmp/
+temp/
+
+

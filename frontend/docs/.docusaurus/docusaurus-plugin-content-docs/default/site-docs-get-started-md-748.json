@@ -1,0 +1,23 @@
+{
+  "id": "get-started",
+  "title": "Get Started",
+  "description": "Get started with KnotX Messaging in minutes. This guide will walk you through setting up your first cross-chain message.",
+  "source": "@site/docs/get-started.md",
+  "sourceDirName": ".",
+  "slug": "/get-started",
+  "permalink": "/docs/get-started",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "messaging",
+  "previous": {
+    "title": "Overview",
+    "permalink": "/docs/overview"
+  },
+  "next": {
+    "title": "Sending Messages",
+    "permalink": "/docs/guides/sending-messages"
+  }
+}

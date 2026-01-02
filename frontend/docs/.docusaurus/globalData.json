@@ -1,0 +1,83 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/docs/",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/docs/",
+          "mainDocId": "overview",
+          "docs": [
+            {
+              "id": "concepts/architecture",
+              "path": "/docs/concepts/architecture",
+              "sidebar": "messaging"
+            },
+            {
+              "id": "concepts/message-flow",
+              "path": "/docs/concepts/message-flow",
+              "sidebar": "messaging"
+            },
+            {
+              "id": "concepts/relayer-system",
+              "path": "/docs/concepts/relayer-system",
+              "sidebar": "messaging"
+            },
+            {
+              "id": "concepts/security-model",
+              "path": "/docs/concepts/security-model",
+              "sidebar": "messaging"
+            },
+            {
+              "id": "get-started",
+              "path": "/docs/get-started",
+              "sidebar": "messaging"
+            },
+            {
+              "id": "guides/error-handling",
+              "path": "/docs/guides/error-handling",
+              "sidebar": "messaging"
+            },
+            {
+              "id": "guides/message-format",
+              "path": "/docs/guides/message-format",
+              "sidebar": "messaging"
+            },
+            {
+              "id": "guides/receiving-messages",
+              "path": "/docs/guides/receiving-messages",
+              "sidebar": "messaging"
+            },
+            {
+              "id": "guides/sending-messages",
+              "path": "/docs/guides/sending-messages",
+              "sidebar": "messaging"
+            },
+            {
+              "id": "overview",
+              "path": "/docs/overview",
+              "sidebar": "messaging"
+            },
+            {
+              "id": "tutorial",
+              "path": "/docs/tutorial",
+              "sidebar": "messaging"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "messaging": {
+              "link": {
+                "path": "/docs/overview",
+                "label": "Overview"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "overview",
+  "title": "Messaging Overview",
+  "description": "KnotX Messaging enables secure, trustless communication between different blockchain networks. Send messages, data, and execute cross-chain operations with cryptographic guarantees and enterprise-grade reliability.",
+  "source": "@site/docs/overview.md",
+  "sourceDirName": ".",
+  "slug": "/overview",
+  "permalink": "/docs/overview",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "messaging",
+  "next": {
+    "title": "Get Started",
+    "permalink": "/docs/get-started"
+  }
+}
