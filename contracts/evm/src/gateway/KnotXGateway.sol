@@ -62,7 +62,7 @@ contract KnotXGateway is Ownable {
         messageId = MessageHash.compute(
             uint32(block.chainid),
             dstChainId,
-            address(this),
+            abi.encodePacked(msg.sender),
             receiver,
             currentNonce,
             payload
@@ -72,6 +72,7 @@ contract KnotXGateway is Ownable {
             messageId,
             dstChainId,
             receiver,
+            abi.encodePacked(msg.sender),
             currentNonce,
             payload
         );
@@ -83,7 +84,7 @@ contract KnotXGateway is Ownable {
     // DESTINATION CHAIN LOGIC
     function executeMessage(
         uint32 srcChainId,
-        address srcGateway,
+        bytes calldata sender,
         bytes calldata receiver,
         uint64 messageNonce,
         bytes calldata payload,
@@ -92,7 +93,7 @@ contract KnotXGateway is Ownable {
         bytes32 messageId = MessageHash.compute(
             srcChainId,
             uint32(block.chainid),
-            srcGateway,
+            sender,
             receiver,
             messageNonce,
             payload
@@ -109,7 +110,7 @@ contract KnotXGateway is Ownable {
 
         IKnotXReceiver(receiverAddress).onCall(
             srcChainId,
-            srcGateway,
+            sender,
             payload
         );
 
