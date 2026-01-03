@@ -1,66 +1,70 @@
 import { RelayMessage, RelayResult } from '../types/message';
 import { ChainId } from '../types/chains';
-import { SepoliaSender } from '../chains/evm/sepolia.sender';
-import { SolanaSender } from '../chains/solana/solana.sender';
-import { CasperSender } from '../chains/casper/casper.sender';
+import { SepoliaExecutor } from '../chains/evm/sepolia.executor';
+import { CasperExecutor } from '../chains/casper/casper.executor';
+import { env } from '../config/env';
 import { logger } from '../utils/logger';
 
 /**
- * Routes messages to the appropriate chain sender
+ * Routes messages to the appropriate chain executor
  */
 export class MessageRouter {
-  private sepoliaSender: SepoliaSender;
-  private solanaSender: SolanaSender;
-  private casperSender: CasperSender;
+  private sepoliaExecutor: SepoliaExecutor;
+  private casperExecutor: CasperExecutor;
 
   constructor() {
-    this.sepoliaSender = new SepoliaSender();
-    this.solanaSender = new SolanaSender();
-    this.casperSender = new CasperSender();
+    this.sepoliaExecutor = new SepoliaExecutor();
+    this.casperExecutor = new CasperExecutor();
   }
 
   /**
-   * Initialize all senders
+   * Initialize all executors
    */
   async initialize(): Promise<void> {
     try {
       await Promise.all([
-        this.sepoliaSender.initialize(),
-        this.solanaSender.initialize(),
-        this.casperSender.initialize(),
+        this.sepoliaExecutor.initialize(),
+        this.casperExecutor.initialize(),
       ]);
-      logger.info('All chain senders initialized');
+      logger.info('All chain executors initialized');
     } catch (error) {
-      logger.error({ error }, 'Failed to initialize chain senders');
+      logger.error({ error }, 'Failed to initialize chain executors');
       throw error;
     }
   }
 
   /**
-   * Route message to the correct destination chain sender
+   * Route message to the correct destination chain executor
    */
   async route(message: RelayMessage): Promise<RelayResult> {
     const destinationChain = message.destinationChain as ChainId;
+
+    // Set destination gateway based on destination chain
+    if (!message.destinationGateway) {
+      if (destinationChain === ChainId.ETHEREUM_SEPOLIA) {
+        message.destinationGateway = env.ETHEREUM_SEPOLIA_GATEWAY || '0xD3B1c72361f03d5F138C2c768AfdF700266bb39a';
+      } else if (destinationChain === ChainId.CASPER_TESTNET) {
+        message.destinationGateway = env.CASPER_GATEWAY || 'hash-4ce6b9ec80fde0158f7ab13f37cff883660048c1d457e9e48130cc884ce83073';
+      }
+    }
 
     logger.info(
       {
         messageId: message.messageId,
         sourceChain: message.sourceChain,
         destinationChain,
+        destinationGateway: message.destinationGateway,
       },
-      'Routing message to destination chain'
+      'Routing message to destination chain executor'
     );
 
     try {
       switch (destinationChain) {
         case ChainId.ETHEREUM_SEPOLIA:
-          return await this.sepoliaSender.sendMessageWithRetry(message);
-
-        case ChainId.SOLANA_DEVNET:
-          return await this.solanaSender.sendMessageWithRetry(message);
+          return await this.sepoliaExecutor.executeMessage(message);
 
         case ChainId.CASPER_TESTNET:
-          return await this.casperSender.sendMessageWithRetry(message);
+          return await this.casperExecutor.executeMessage(message);
 
         default:
           throw new Error(`Unsupported destination chain: ${destinationChain}`);

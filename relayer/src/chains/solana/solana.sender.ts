@@ -1,9 +1,6 @@
 import {
   Connection,
   Keypair,
-  PublicKey,
-  Transaction,
-  sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import { ChainId } from '../../types/chains';
 import { RelayMessage, RelayResult } from '../../types/message';

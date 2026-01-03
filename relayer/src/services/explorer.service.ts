@@ -1,4 +1,4 @@
-import { Message, Stats, IMessage } from '../db';
+import { Message, RelayerMetrics, IMessage } from '../db';
 import { MessageStatus } from '../types/message';
 import { logger } from '../utils/logger';
 
@@ -66,7 +66,7 @@ class ExplorerService {
    */
   async getExplorerStats() {
     try {
-      const stats = await Stats.findOne();
+      const metrics = await RelayerMetrics.findOne();
       const messageStats = await Message.aggregate([
         {
           $group: {
@@ -85,12 +85,13 @@ class ExplorerService {
       );
 
       return {
-        totalMessages: stats?.totalMessages || 0,
-        successfulRelays: stats?.successfulRelays || 0,
-        failedRelays: stats?.failedRelays || 0,
+        totalMessages: metrics?.totalMessagesProcessed || 0,
+        successfulRelays: metrics?.totalMessagesDelivered || 0,
+        failedRelays: metrics?.totalMessagesFailed || 0,
         statusCounts,
-        perChainCounts: stats?.perChainCounts || {},
-        lastUpdated: stats?.lastUpdated || new Date(),
+        messagesBySourceChain: metrics?.messagesBySourceChain || {},
+        messagesByDestinationChain: metrics?.messagesByDestinationChain || {},
+        lastUpdated: metrics?.lastUpdated || new Date(),
       };
     } catch (error) {
       logger.error({ error }, 'Failed to get explorer stats');

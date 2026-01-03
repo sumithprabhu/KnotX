@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Connection } from '@solana/web3.js';
 import { ChainId } from '../../types/chains';
 import { RelayMessage } from '../../types/message';
 import { getChainConfig } from '../../config/chains';
@@ -80,7 +80,7 @@ export class SolanaListener extends EventEmitter {
    * Handle account change event
    * TODO: Parse actual account data
    */
-  private handleAccountChange(accountInfo: any, context: any): void {
+  private _handleAccountChange(_accountInfo: any, _context: any): void {
     try {
       // TODO: Parse accountInfo.data to extract message details
       // - sourceChain

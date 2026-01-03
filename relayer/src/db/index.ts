@@ -1,2 +1,3 @@
 export { Message, IMessage } from './models/Message';
-export { Stats, IStats } from './models/Stats';
+export { ChainState, IChainState } from './models/ChainState';
+export { RelayerMetrics, IRelayerMetrics } from './models/RelayerMetrics';

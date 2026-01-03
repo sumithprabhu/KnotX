@@ -4,7 +4,6 @@ import { logger } from './utils/logger';
 import { RelayExecutor } from './relayer/relay.executor';
 import { RelayMessage } from './types/message';
 import { SepoliaListener } from './chains/evm/sepolia.listener';
-import { SolanaListener } from './chains/solana/solana.listener';
 import { CasperListener } from './chains/casper/casper.listener';
 
 /**
@@ -13,7 +12,6 @@ import { CasperListener } from './chains/casper/casper.listener';
 export class App extends EventEmitter {
   private relayExecutor: RelayExecutor;
   private sepoliaListener: SepoliaListener;
-  private solanaListener: SolanaListener;
   private casperListener: CasperListener;
   private isRunning = false;
 
@@ -21,7 +19,6 @@ export class App extends EventEmitter {
     super();
     this.relayExecutor = new RelayExecutor();
     this.sepoliaListener = new SepoliaListener();
-    this.solanaListener = new SolanaListener();
     this.casperListener = new CasperListener();
   }
 
@@ -41,7 +38,6 @@ export class App extends EventEmitter {
       // Initialize chain listeners
       await Promise.all([
         this.sepoliaListener.initialize(),
-        this.solanaListener.initialize(),
         this.casperListener.initialize(),
       ]);
 
@@ -70,7 +66,6 @@ export class App extends EventEmitter {
       // Start all chain listeners
       await Promise.all([
         this.sepoliaListener.startListening(),
-        this.solanaListener.startListening(),
         this.casperListener.startListening(),
       ]);
 
@@ -97,7 +92,6 @@ export class App extends EventEmitter {
       // Stop all chain listeners
       await Promise.all([
         this.sepoliaListener.stopListening(),
-        this.solanaListener.stopListening(),
         this.casperListener.stopListening(),
       ]);
 
@@ -116,11 +110,6 @@ export class App extends EventEmitter {
   private setupMessageHandlers(): void {
     // Handle messages from Ethereum Sepolia
     this.sepoliaListener.on('message', (message: RelayMessage) => {
-      this.handleIncomingMessage(message);
-    });
-
-    // Handle messages from Solana Devnet
-    this.solanaListener.on('message', (message: RelayMessage) => {
       this.handleIncomingMessage(message);
     });
 

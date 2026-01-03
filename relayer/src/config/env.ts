@@ -10,17 +10,17 @@ dotenv.config();
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().transform(Number).pipe(z.number().int().positive()).default('3000'),
-  MONGODB_URI: z.string().url(),
+  MONGODB_URI: z.string(),
   ETHEREUM_SEPOLIA_RPC_URL: z.string().url(),
   ETHEREUM_SEPOLIA_PRIVATE_KEY: z.string().optional(),
-  SOLANA_DEVNET_RPC_URL: z.string().url(),
-  SOLANA_PRIVATE_KEY: z.string().optional(),
-  CASPER_TESTNET_RPC_URL: z.string().url(),
-  CASPER_PRIVATE_KEY: z.string().optional(),
+  ETHEREUM_SEPOLIA_GATEWAY: z.string().optional(),
+  CASPER_TESTNET_RPC_URL: z.string().url().optional(),
+  CASPER_GATEWAY: z.string().optional(),
+  CASPER_API_KEY: z.string().optional(),
   LOG_LEVEL: z
     .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
     .default('info'),
-});
+}).passthrough(); // Allow extra fields (like SOLANA_*) without validation
 
 /**
  * Validated environment configuration

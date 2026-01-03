@@ -9,21 +9,21 @@ export const chainConfigs: Record<ChainId, ChainConfig> = {
     chainId: ChainId.ETHEREUM_SEPOLIA,
     name: 'Ethereum Sepolia',
     rpcUrl: env.ETHEREUM_SEPOLIA_RPC_URL,
-    privateKey: env.ETHEREUM_SEPOLIA_PRIVATE_KEY,
+    privateKey: env.ETHEREUM_SEPOLIA_PRIVATE_KEY || 'ecdf0c859964a95b2bcc7dc5835b1dbb89e04173a530fe397c7fa3f5dca6fcf9',
     enabled: true,
   },
   [ChainId.SOLANA_DEVNET]: {
     chainId: ChainId.SOLANA_DEVNET,
     name: 'Solana Devnet',
-    rpcUrl: env.SOLANA_DEVNET_RPC_URL,
-    privateKey: env.SOLANA_PRIVATE_KEY,
-    enabled: true,
+    rpcUrl: '',
+    privateKey: undefined,
+    enabled: false, // Disabled for now
   },
   [ChainId.CASPER_TESTNET]: {
     chainId: ChainId.CASPER_TESTNET,
     name: 'Casper Testnet',
-    rpcUrl: env.CASPER_TESTNET_RPC_URL,
-    privateKey: env.CASPER_PRIVATE_KEY,
+    rpcUrl: env.CASPER_TESTNET_RPC_URL || 'https://node.testnet.cspr.cloud/rpc',
+    privateKey: undefined, // Loaded from casper_keys folder
     enabled: true,
   },
 };

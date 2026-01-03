@@ -1,5 +1,5 @@
 import { RelayMessage, RelayResult } from '../types/message';
-import { Stats } from '../db';
+import { RelayerMetrics } from '../db';
 import { logger } from '../utils/logger';
 
 /**
@@ -9,25 +9,32 @@ class MetricsService {
   /**
    * Record a successful relay
    */
-  async recordSuccessfulRelay(message: RelayMessage, result: RelayResult): Promise<void> {
+  async recordSuccessfulRelay(message: RelayMessage, _result: RelayResult): Promise<void> {
     try {
-      const stats = await this.getOrCreateStats();
+      const metrics = await this.getOrCreateMetrics();
 
-      stats.totalMessages += 1;
-      stats.successfulRelays += 1;
+      metrics.totalMessagesProcessed += 1;
+      metrics.totalMessagesDelivered += 1;
 
       // Update per-chain counts
-      this.updatePerChainCounts(stats, message.sourceChain, 'sent', 'successful');
-      this.updatePerChainCounts(stats, message.destinationChain, 'received', 'successful');
+      if (!metrics.messagesBySourceChain[message.sourceChain]) {
+        metrics.messagesBySourceChain[message.sourceChain] = 0;
+      }
+      if (!metrics.messagesByDestinationChain[message.destinationChain]) {
+        metrics.messagesByDestinationChain[message.destinationChain] = 0;
+      }
 
-      stats.lastUpdated = new Date();
-      await stats.save();
+      metrics.messagesBySourceChain[message.sourceChain] += 1;
+      metrics.messagesByDestinationChain[message.destinationChain] += 1;
+      metrics.lastUpdated = new Date();
+
+      await metrics.save();
 
       logger.debug(
         {
           messageId: message.messageId,
-          totalMessages: stats.totalMessages,
-          successfulRelays: stats.successfulRelays,
+          totalProcessed: metrics.totalMessagesProcessed,
+          totalDelivered: metrics.totalMessagesDelivered,
         },
         'Metrics updated for successful relay'
       );
@@ -39,25 +46,32 @@ class MetricsService {
   /**
    * Record a failed relay
    */
-  async recordFailedRelay(message: RelayMessage, result: RelayResult): Promise<void> {
+  async recordFailedRelay(message: RelayMessage, _result: RelayResult): Promise<void> {
     try {
-      const stats = await this.getOrCreateStats();
+      const metrics = await this.getOrCreateMetrics();
 
-      stats.totalMessages += 1;
-      stats.failedRelays += 1;
+      metrics.totalMessagesProcessed += 1;
+      metrics.totalMessagesFailed += 1;
 
       // Update per-chain counts
-      this.updatePerChainCounts(stats, message.sourceChain, 'sent', 'failed');
-      this.updatePerChainCounts(stats, message.destinationChain, 'received', 'failed');
+      if (!metrics.messagesBySourceChain[message.sourceChain]) {
+        metrics.messagesBySourceChain[message.sourceChain] = 0;
+      }
+      if (!metrics.messagesByDestinationChain[message.destinationChain]) {
+        metrics.messagesByDestinationChain[message.destinationChain] = 0;
+      }
 
-      stats.lastUpdated = new Date();
-      await stats.save();
+      metrics.messagesBySourceChain[message.sourceChain] += 1;
+      metrics.messagesByDestinationChain[message.destinationChain] += 1;
+      metrics.lastUpdated = new Date();
+
+      await metrics.save();
 
       logger.debug(
         {
           messageId: message.messageId,
-          totalMessages: stats.totalMessages,
-          failedRelays: stats.failedRelays,
+          totalProcessed: metrics.totalMessagesProcessed,
+          totalFailed: metrics.totalMessagesFailed,
         },
         'Metrics updated for failed relay'
       );
@@ -70,53 +84,25 @@ class MetricsService {
    * Get current statistics
    */
   async getStats() {
-    return await this.getOrCreateStats();
+    return await this.getOrCreateMetrics();
   }
 
   /**
-   * Get or create stats document
+   * Get or create metrics document
    */
-  private async getOrCreateStats() {
-    let stats = await Stats.findOne();
-    if (!stats) {
-      stats = await Stats.create({
-        totalMessages: 0,
-        successfulRelays: 0,
-        failedRelays: 0,
-        perChainCounts: {},
+  private async getOrCreateMetrics() {
+    let metrics = await RelayerMetrics.findOne();
+    if (!metrics) {
+      metrics = await RelayerMetrics.create({
+        totalMessagesProcessed: 0,
+        totalMessagesDelivered: 0,
+        totalMessagesFailed: 0,
+        messagesBySourceChain: {},
+        messagesByDestinationChain: {},
+        lastUpdated: new Date(),
       });
     }
-    return stats;
-  }
-
-  /**
-   * Update per-chain counts
-   */
-  private updatePerChainCounts(
-    stats: any,
-    chainId: string,
-    direction: 'sent' | 'received',
-    outcome: 'successful' | 'failed'
-  ): void {
-    if (!stats.perChainCounts) {
-      stats.perChainCounts = {};
-    }
-
-    if (!stats.perChainCounts[chainId]) {
-      stats.perChainCounts[chainId] = {
-        sent: 0,
-        received: 0,
-        successful: 0,
-        failed: 0,
-      };
-    }
-
-    stats.perChainCounts[chainId][direction] += 1;
-    if (outcome === 'successful') {
-      stats.perChainCounts[chainId].successful += 1;
-    } else {
-      stats.perChainCounts[chainId].failed += 1;
-    }
+    return metrics;
   }
 }
 

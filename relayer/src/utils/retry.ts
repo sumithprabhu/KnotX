@@ -47,7 +47,7 @@ export async function retry<T>(
         'Retrying operation'
       );
 
-      await sleep(currentDelay);
+      await new Promise(resolve => setTimeout(resolve, currentDelay));
       currentDelay *= backoffMultiplier;
     }
   }
