@@ -1,5 +1,8 @@
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -89,6 +92,13 @@ const nextConfig = {
     config.resolve.alias['./test.js'] = emptyModulePath
     config.resolve.alias['./test'] = emptyModulePath
     config.resolve.alias['./test/'] = emptyModulePath
+    
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      }
+    }
     
     return config
   },
