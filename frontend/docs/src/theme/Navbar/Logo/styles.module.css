@@ -9,12 +9,12 @@
 .knotText {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--ifm-navbar-foreground);
+  color: #ffffff;
   margin-right: -4px;
 }
 
 .logoImage {
-  margin-left: -4px;
+  margin-left: 1px;
   filter: brightness(1.1) contrast(1.1);
   height: 32px;
   width: 32px;
