@@ -18,19 +18,9 @@ function RacingTrack({ network, count, maxCount }: RacingTrackProps) {
   const networkName = network === "casper" ? "Casper" : "Ethereum"
   const networkColor = network === "casper" ? CASPER_COLOR : ETHEREUM_COLOR
   
-  // Calculate position: start from finish line (right) and move toward start line (left)
-  // Max count reaches start line (left), others relative to that
-  // Position is calculated from right (100%) to left (0%)
-  const trackWidth = 100 // Full track width
-  const startLinePosition = 0 // Start line is on the left (0%)
-  const finishLinePosition = 100 // Finish line is on the right (100%)
-  
-  // Calculate how far from finish line: max count reaches start line
-  // position = finishLinePosition - (count / maxCount) * (finishLinePosition - startLinePosition)
-  // This means: count = 0 → position = 100% (at finish), count = maxCount → position = 0% (at start)
-  const position = maxCount > 0 
-    ? finishLinePosition - (count / maxCount) * (finishLinePosition - startLinePosition)
-    : finishLinePosition
+  // Calculate position: max count reaches 70% of track, others relative to that
+  const maxPosition = 70 // 70% is the maximum position for the leading horse
+  const position = maxCount > 0 ? (count / maxCount) * maxPosition : 0
 
   // Load horse animation
   const [horseData, setHorseData] = useState<any>(null)
@@ -111,11 +101,11 @@ function RacingTrack({ network, count, maxCount }: RacingTrackProps) {
           })}
         </div>
 
-        {/* Horse Animation - moved up and made larger, running from finish to start */}
+        {/* Horse Animation - moved up and made larger */}
         <motion.div
           className="absolute"
           style={{
-            left: `${Math.max(0, Math.min(100, position))}%`, // Clamp between 0% and 100%
+            left: `${Math.min(position, maxPosition)}%`,
             top: "20%", // Moved up to align with path
             width: "88px", // 10% larger (80px * 1.1 = 88px)
             height: "88px", // 10% larger
