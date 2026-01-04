@@ -58,7 +58,7 @@ export function FooterSection() {
             <a href="#" className="text-foreground text-sm font-normal leading-5 hover:underline">
               Terms of use
             </a>
-            <Link href="/docs" className="text-foreground text-sm font-normal leading-5 hover:underline">
+            <Link href="/docs/overview" className="text-foreground text-sm font-normal leading-5 hover:underline">
               Documentation
             </Link>
             <a href="#" className="text-foreground text-sm font-normal leading-5 hover:underline">
