@@ -18,7 +18,7 @@ export class CasperListener extends EventEmitter {
   private rpcClient: RpcClient | null = null;
   private isListening = false;
   private pollingInterval: NodeJS.Timeout | null = null;
-  private readonly POLL_INTERVAL_MS = 60000; // Poll every 1 minute
+  private readonly POLL_INTERVAL_MS = 10000; // Poll every 10 seconds
   private readonly CONTRACT_HASH: string;
   private readonly KEY_NONCE = 'nonce';
   private readonly KEY_MESSAGES = 'messages';
