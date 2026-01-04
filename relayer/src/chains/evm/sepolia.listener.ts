@@ -14,23 +14,188 @@ import { createHash } from 'crypto';
  * event MessageSent(bytes32 indexed messageId, uint32 dstChainId, bytes receiver, bytes sender, uint64 nonce, bytes payload);
  */
 const GATEWAY_ABI = [
-  'event MessageSent(bytes32 indexed messageId, uint32 dstChainId, bytes receiver, bytes sender, uint64 nonce, bytes payload)',
-  'function sendMessage(uint32 dstChainId, bytes receiver, bytes payload) external payable returns (bytes32 messageId)',
-  'function executeMessage(uint32 srcChainId, bytes sender, bytes receiver, uint64 messageNonce, bytes payload, bytes relayerSignature) external',
+  {
+    type: 'constructor',
+    inputs: [
+      { name: '_relayer', type: 'address', internalType: 'address' },
+      { name: '_treasury', type: 'address', internalType: 'address' },
+      { name: '_baseFee', type: 'uint256', internalType: 'uint256' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'baseFee',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'executeMessage',
+    inputs: [
+      { name: 'srcChainId', type: 'uint32', internalType: 'uint32' },
+      { name: 'sender', type: 'bytes', internalType: 'bytes' },
+      { name: 'receiver', type: 'bytes', internalType: 'bytes' },
+      { name: 'messageNonce', type: 'uint64', internalType: 'uint64' },
+      { name: 'payload', type: 'bytes', internalType: 'bytes' },
+      { name: 'relayerSignature', type: 'bytes', internalType: 'bytes' },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'executedMessages',
+    inputs: [{ name: '', type: 'bytes32', internalType: 'bytes32' }],
+    outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'nonce',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint64', internalType: 'uint64' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'owner',
+    inputs: [],
+    outputs: [{ name: '', type: 'address', internalType: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'relayer',
+    inputs: [],
+    outputs: [{ name: '', type: 'address', internalType: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'renounceOwnership',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'sendMessage',
+    inputs: [
+      { name: 'dstChainId', type: 'uint32', internalType: 'uint32' },
+      { name: 'receiver', type: 'bytes', internalType: 'bytes' },
+      { name: 'payload', type: 'bytes', internalType: 'bytes' },
+    ],
+    outputs: [{ name: 'messageId', type: 'bytes32', internalType: 'bytes32' }],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    name: 'setBaseFee',
+    inputs: [{ name: 'newFee', type: 'uint256', internalType: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'setRelayer',
+    inputs: [{ name: 'newRelayer', type: 'address', internalType: 'address' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'setSupportedChain',
+    inputs: [
+      { name: 'chainId', type: 'uint32', internalType: 'uint32' },
+      { name: 'supported', type: 'bool', internalType: 'bool' },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'supportedChains',
+    inputs: [{ name: '', type: 'uint32', internalType: 'uint32' }],
+    outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'transferOwnership',
+    inputs: [{ name: 'newOwner', type: 'address', internalType: 'address' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'treasury',
+    inputs: [],
+    outputs: [{ name: '', type: 'address', internalType: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'event',
+    name: 'MessageExecuted',
+    inputs: [
+      { name: 'messageId', type: 'bytes32', indexed: true, internalType: 'bytes32' },
+      { name: 'srcChainId', type: 'uint32', indexed: true, internalType: 'uint32' },
+      { name: 'receiver', type: 'bytes', indexed: false, internalType: 'bytes' },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'MessageSent',
+    inputs: [
+      { name: 'messageId', type: 'bytes32', indexed: true, internalType: 'bytes32' },
+      { name: 'dstChainId', type: 'uint32', indexed: true, internalType: 'uint32' },
+      { name: 'receiver', type: 'bytes', indexed: false, internalType: 'bytes' },
+      { name: 'sender', type: 'bytes', indexed: false, internalType: 'bytes' },
+      { name: 'nonce', type: 'uint64', indexed: false, internalType: 'uint64' },
+      { name: 'payload', type: 'bytes', indexed: false, internalType: 'bytes' },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'OwnershipTransferred',
+    inputs: [
+      { name: 'previousOwner', type: 'address', indexed: true, internalType: 'address' },
+      { name: 'newOwner', type: 'address', indexed: true, internalType: 'address' },
+    ],
+    anonymous: false,
+  },
+  { type: 'error', name: 'AlreadyExecuted', inputs: [] },
+  { type: 'error', name: 'InsufficientFee', inputs: [] },
+  { type: 'error', name: 'InvalidSignature', inputs: [] },
+  {
+    type: 'error',
+    name: 'OwnableInvalidOwner',
+    inputs: [{ name: 'owner', type: 'address', internalType: 'address' }],
+  },
+  {
+    type: 'error',
+    name: 'OwnableUnauthorizedAccount',
+    inputs: [{ name: 'account', type: 'address', internalType: 'address' }],
+  },
+  { type: 'error', name: 'UnsupportedChain', inputs: [] },
 ];
 
 /**
  * Ethereum Sepolia event listener
  */
 export class SepoliaListener extends EventEmitter {
-  private provider: ethers.JsonRpcProvider | null = null;
+  private provider: ethers.JsonRpcProvider | ethers.WebSocketProvider | null = null;
   private contract: ethers.Contract | null = null;
   private isListening = false;
   private readonly GATEWAY_ADDRESS: string;
 
   constructor() {
     super();
-    this.GATEWAY_ADDRESS = env.ETHEREUM_SEPOLIA_GATEWAY || '0xD3B1c72361f03d5F138C2c768AfdF700266bb39a';
+    this.GATEWAY_ADDRESS =
+      env.ETHEREUM_SEPOLIA_GATEWAY || '0xe6F75A8E2d21EeFD33A5ecA76215bB20DbE0bb1F';
   }
 
   /**
@@ -40,32 +205,44 @@ export class SepoliaListener extends EventEmitter {
   async initialize(): Promise<void> {
     try {
       const config = getChainConfig(ChainId.ETHEREUM_SEPOLIA);
-      
+
       // Convert HTTP RPC URL to WebSocket URL for real-time listening
-      const wsUrl = config.rpcUrl.replace('https://', 'wss://').replace('http://', 'ws://');
-      
+      // Infura WebSocket format: wss://sepolia.infura.io/ws/v3/{PROJECT_ID}
+      let wsUrl = config.rpcUrl;
+      if (wsUrl.includes('infura.io/v3/')) {
+        // Extract project ID and convert to WebSocket URL
+        const projectId = wsUrl.split('/v3/')[1];
+        wsUrl = `wss://sepolia.infura.io/ws/v3/${projectId}`;
+      } else {
+        // Generic conversion
+        wsUrl = wsUrl.replace('https://', 'wss://').replace('http://', 'ws://');
+      }
+
+      logger.info({ wsUrl }, 'Connecting to WebSocket...');
+
       // Use WebSocketProvider for real-time event listening
       this.provider = new ethers.WebSocketProvider(wsUrl);
-      
-      // Handle WebSocket connection events
-      this.provider.on('error', (error) => {
-        logger.error({ error }, 'WebSocket provider error');
-      });
-      
-      this.provider.on('close', () => {
-        logger.warn('WebSocket connection closed, will attempt to reconnect');
-      });
-      
-      this.contract = new ethers.Contract(
-        this.GATEWAY_ADDRESS,
-        GATEWAY_ABI,
-        this.provider
-      );
-      
+
+      // Wait for initial connection by making a test call
+      try {
+        if (this.provider) {
+          await this.provider.getBlockNumber();
+          logger.info('WebSocket connection established');
+        }
+      } catch (error) {
+        logger.warn({ error }, 'WebSocket connection test failed, will retry on first use');
+      }
+
+      if (!this.provider) {
+        throw new Error('Provider not initialized');
+      }
+
+      this.contract = new ethers.Contract(this.GATEWAY_ADDRESS, GATEWAY_ABI, this.provider);
+
       const blockNumber = await this.provider.getBlockNumber();
       logger.info(
-        { 
-          chain: ChainId.ETHEREUM_SEPOLIA, 
+        {
+          chain: ChainId.ETHEREUM_SEPOLIA,
           blockNumber,
           gatewayAddress: this.GATEWAY_ADDRESS,
           connectionType: 'WebSocket',
@@ -99,11 +276,11 @@ export class SepoliaListener extends EventEmitter {
       if (!this.provider) {
         return;
       }
-      
+
       let chainState = await ChainState.findOne({ chainId: ChainId.ETHEREUM_SEPOLIA });
       const currentBlock = await this.provider.getBlockNumber();
-      const fromBlock = chainState?.lastProcessedBlock 
-        ? chainState.lastProcessedBlock + 1 
+      const fromBlock = chainState?.lastProcessedBlock
+        ? chainState.lastProcessedBlock + 1
         : Math.max(0, currentBlock - 1000); // Start from 1000 blocks ago if no state
 
       // Listen for new events
@@ -111,26 +288,54 @@ export class SepoliaListener extends EventEmitter {
       if (!this.contract) {
         throw new Error('Contract not initialized');
       }
-      
-      this.contract.on('MessageSent', async (
-        messageId: string,
-        dstChainId: bigint,
-        receiver: string,
-        sender: string,
-        nonce: bigint,
-        payload: string,
-        event: ethers.Log
-      ) => {
-        await this.handleMessageSent(
-          messageId,
-          dstChainId,
-          receiver,
-          sender,
-          nonce,
-          payload,
-          event
-        );
-      });
+
+      logger.info(
+        {
+          fromBlock,
+          currentBlock,
+          gatewayAddress: this.GATEWAY_ADDRESS,
+          blocksToProcess: currentBlock - fromBlock,
+        },
+        'Setting up MessageSent event listener'
+      );
+
+      // Add event listener with detailed logging
+      this.contract.on(
+        'MessageSent',
+        async (
+          messageId: string,
+          dstChainId: bigint,
+          receiver: string,
+          sender: string,
+          nonce: bigint,
+          payload: string,
+          event: ethers.Log
+        ) => {
+          logger.info(
+            {
+              messageId,
+              dstChainId: Number(dstChainId),
+              nonce: Number(nonce),
+              blockNumber: event.blockNumber,
+              transactionHash: event.transactionHash,
+              logIndex: event.index,
+            },
+            '🔔 MessageSent event received via WebSocket'
+          );
+
+          await this.handleMessageSent(
+            messageId,
+            dstChainId,
+            receiver,
+            sender,
+            nonce,
+            payload,
+            event
+          );
+        }
+      );
+
+      logger.info('✅ MessageSent event listener registered and active');
 
       // Also process historical events from last processed block
       if (typeof fromBlock === 'number') {
@@ -157,28 +362,45 @@ export class SepoliaListener extends EventEmitter {
       const currentBlock = await this.provider!.getBlockNumber();
       const toBlock = Math.min(fromBlock + 1000, currentBlock); // Process in batches of 1000
 
-      logger.info(
-        { fromBlock, toBlock, currentBlock },
-        'Processing historical Sepolia events'
-      );
+      logger.info({ fromBlock, toBlock, currentBlock }, 'Processing historical Sepolia events');
 
       const filter = this.contract.filters.MessageSent();
       const events = await this.contract.queryFilter(filter, fromBlock, toBlock);
 
+      logger.info(
+        { eventCount: events.length, fromBlock, toBlock },
+        `Processing ${events.length} historical MessageSent events`
+      );
+
       for (const event of events) {
         if ('args' in event && event.args) {
           const args = event.args as any;
+          logger.debug(
+            {
+              messageId: args[0],
+              dstChainId: Number(args[1]),
+              nonce: Number(args[4]),
+              blockNumber: event.blockNumber,
+            },
+            'Processing historical event'
+          );
+
           await this.handleMessageSent(
             args[0] as string, // messageId
-            args[1] as bigint,  // dstChainId
-            args[2] as string,  // receiver
-            args[3] as string,  // sender
-            args[4] as bigint,  // nonce
-            args[5] as string,  // payload
+            args[1] as bigint, // dstChainId
+            args[2] as string, // receiver
+            args[3] as string, // sender
+            args[4] as bigint, // nonce
+            args[5] as string, // payload
             event
           );
         }
       }
+
+      logger.info(
+        { processedCount: events.length, toBlock },
+        '✅ Finished processing historical events'
+      );
 
       // Update last processed block
       await ChainState.findOneAndUpdate(
@@ -217,11 +439,14 @@ export class SepoliaListener extends EventEmitter {
       // Map chain IDs
       // Source chain is always Sepolia (since we're listening on Sepolia)
       const dstChainIdNum = Number(dstChainId);
-      
+
       const sourceChain = ChainId.ETHEREUM_SEPOLIA;
-      const destinationChain = dstChainIdNum === 3 ? ChainId.CASPER_TESTNET : 
-                               dstChainIdNum === 11155111 ? ChainId.ETHEREUM_SEPOLIA : 
-                               `chain-${dstChainIdNum}`;
+      const destinationChain =
+        dstChainIdNum === 3
+          ? ChainId.CASPER_TESTNET
+          : dstChainIdNum === 11155111
+            ? ChainId.ETHEREUM_SEPOLIA
+            : `chain-${dstChainIdNum}`;
 
       // Convert receiver to appropriate format
       // For Casper: receiver is 32 bytes (contract hash)
@@ -245,8 +470,11 @@ export class SepoliaListener extends EventEmitter {
         destinationGateway = ethers.hexlify(receiver);
       }
 
+      // Use a unique messageId based on chain, block, and event index
+      const uniqueMessageId = `eth-${event.blockNumber}-${event.index}-${messageId}`;
+
       const message: RelayMessage = {
-        messageId: `eth-${messageId}-${Date.now()}`,
+        messageId: uniqueMessageId,
         nonce: Number(nonce),
         sourceChain,
         destinationChain,
@@ -258,17 +486,48 @@ export class SepoliaListener extends EventEmitter {
       };
 
       logger.info(
-        { 
-          messageId: message.messageId, 
+        {
+          messageId: message.messageId,
+          originalMessageId: messageId,
           nonce: message.nonce,
           sourceChain: message.sourceChain,
           destinationChain: message.destinationChain,
           blockNumber: event.blockNumber,
+          transactionHash: event.transactionHash,
+          payloadLength: payloadBytes.length,
         },
-        'Message received from Ethereum Sepolia'
+        '📨 Message received from Ethereum Sepolia, emitting to relay executor'
       );
 
+      // Check if this message was already processed
+      const { Message } = await import('../../db/models/Message');
+      const existingMessage = await Message.findOne({
+        $or: [
+          { messageId: uniqueMessageId },
+          {
+            payloadHash: message.payloadHash,
+            sourceChain: message.sourceChain,
+            nonce: message.nonce,
+          },
+        ],
+      });
+
+      if (existingMessage) {
+        logger.warn(
+          {
+            messageId: uniqueMessageId,
+            existingStatus: existingMessage.status,
+            existingTxHash: existingMessage.transactionHash,
+          },
+          '⚠️  Message already processed, skipping'
+        );
+        return;
+      }
+
+      // Emit message to relay executor
       this.emit('message', message);
+
+      logger.info({ messageId: message.messageId }, '✅ Message emitted to relay executor');
 
       // Update last processed block
       await ChainState.findOneAndUpdate(
@@ -276,6 +535,8 @@ export class SepoliaListener extends EventEmitter {
         { lastProcessedBlock: event.blockNumber },
         { upsert: true }
       );
+
+      logger.debug({ blockNumber: event.blockNumber }, 'Updated last processed block in database');
     } catch (error) {
       logger.error({ error, event }, 'Error handling MessageSent event');
     }
@@ -286,16 +547,28 @@ export class SepoliaListener extends EventEmitter {
    */
   async stopListening(): Promise<void> {
     this.isListening = false;
-    
+
     if (this.contract) {
       this.contract.removeAllListeners('MessageSent');
     }
-    
+
     // Close WebSocket connection
-    if (this.provider && 'destroy' in this.provider) {
-      await (this.provider as any).destroy();
+    if (this.provider) {
+      try {
+        if ('destroy' in this.provider) {
+          await (this.provider as any).destroy();
+        } else if ('_websocket' in this.provider) {
+          const ws = (this.provider as any)._websocket;
+          if (ws && ws.readyState !== 3) {
+            // 3 = CLOSED
+            ws.close();
+          }
+        }
+      } catch (error) {
+        logger.debug({ error }, 'Error closing WebSocket');
+      }
     }
-    
+
     logger.info('Ethereum Sepolia listener stopped (WebSocket closed)');
   }
 

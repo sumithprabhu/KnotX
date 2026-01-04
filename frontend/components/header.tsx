@@ -12,8 +12,9 @@ import Link from "next/link" // Import Link for client-side navigation
 export function Header() {
   const pathname = usePathname()
   const isDocsPage = pathname?.startsWith("/docs")
+  const isDemoPage = pathname === "/demo"
   
-  const navItems = isDocsPage 
+  const navItems = isDocsPage || isDemoPage
     ? [] 
     : [{ name: "Features", href: "#features-section" }]
 
@@ -50,11 +51,21 @@ export function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <Button
-            className="hidden md:block bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-110 px-6 py-2 rounded-full font-medium shadow-sm transition-transform duration-200"
-          >
-            Get Started
-          </Button>
+          {isDemoPage ? (
+            <Link
+              href="/docs/overview"
+              className="hidden md:block bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-110 px-6 py-2 rounded-full font-medium shadow-sm transition-transform duration-200"
+            >
+              Documentation
+            </Link>
+          ) : (
+            <Link
+              href="/docs/overview"
+              className="hidden md:block bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-110 px-6 py-2 rounded-full font-medium shadow-sm transition-transform duration-200"
+            >
+              Get Started
+            </Link>
+          )}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="text-foreground">
@@ -77,11 +88,21 @@ export function Header() {
                     {item.name}
                   </Link>
                 ))}
-                <Button
-                  className="bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-105 px-6 py-2 rounded-full font-medium shadow-sm w-full mt-4 transition-transform duration-200"
-                >
-                  Get Started
-                </Button>
+                {isDemoPage ? (
+                  <Link
+                    href="/docs/overview"
+                    className="bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-105 px-6 py-2 rounded-full font-medium shadow-sm w-full mt-4 transition-transform duration-200 text-center block"
+                  >
+                    Documentation
+                  </Link>
+                ) : (
+                  <Link
+                    href="/docs/overview"
+                    className="bg-[#6efcd9] text-black hover:bg-[#5ee8c9] hover:scale-105 px-6 py-2 rounded-full font-medium shadow-sm w-full mt-4 transition-transform duration-200 text-center block"
+                  >
+                    Get Started
+                  </Link>
+                )}
               </nav>
             </SheetContent>
           </Sheet>

@@ -54,6 +54,11 @@ const sidebars = {
       id: 'tutorial',
       label: 'Tutorial',
     },
+    {
+      type: 'doc',
+      id: 'contracts',
+      label: 'Contracts',
+    },
   ],
 };
 

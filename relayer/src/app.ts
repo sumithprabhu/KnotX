@@ -129,8 +129,10 @@ export class App extends EventEmitter {
           messageId: message.messageId,
           sourceChain: message.sourceChain,
           destinationChain: message.destinationChain,
+          nonce: message.nonce,
+          payloadLength: message.payload.length / 2, // hex string, so divide by 2
         },
-        'Received message from source chain'
+        '📥 Received message from source chain, starting relay execution'
       );
 
       // Execute relay
@@ -138,21 +140,34 @@ export class App extends EventEmitter {
 
       if (result.success) {
         logger.info(
-          { messageId: message.messageId, txHash: result.transactionHash },
-          'Message relayed successfully'
+          { 
+            messageId: message.messageId, 
+            txHash: result.transactionHash,
+            destinationChain: message.destinationChain,
+          },
+          '✅ Message relayed successfully to destination chain'
         );
       } else {
         logger.error(
-          { messageId: message.messageId, error: result.error },
-          'Message relay failed'
+          { 
+            messageId: message.messageId, 
+            error: result.error,
+            destinationChain: message.destinationChain,
+          },
+          '❌ Message relay failed'
         );
       }
 
       this.emit('messageRelayed', { message, result });
     } catch (error) {
       logger.error(
-        { error, messageId: message.messageId },
-        'Error handling incoming message'
+        { 
+          error, 
+          messageId: message.messageId,
+          sourceChain: message.sourceChain,
+          destinationChain: message.destinationChain,
+        },
+        '💥 Error handling incoming message'
       );
       this.emit('messageError', { message, error });
     }

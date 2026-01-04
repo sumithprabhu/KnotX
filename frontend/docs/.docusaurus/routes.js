@@ -4,15 +4,15 @@ import ComponentCreator from '@docusaurus/ComponentCreator';
 export default [
   {
     path: '/docs/',
-    component: ComponentCreator('/docs/', 'a42'),
+    component: ComponentCreator('/docs/', '318'),
     routes: [
       {
         path: '/docs/',
-        component: ComponentCreator('/docs/', '0fa'),
+        component: ComponentCreator('/docs/', '323'),
         routes: [
           {
             path: '/docs/',
-            component: ComponentCreator('/docs/', '9c9'),
+            component: ComponentCreator('/docs/', '21b'),
             routes: [
               {
                 path: '/docs/concepts/architecture',
@@ -35,6 +35,12 @@ export default [
               {
                 path: '/docs/concepts/security-model',
                 component: ComponentCreator('/docs/concepts/security-model', '761'),
+                exact: true,
+                sidebar: "messaging"
+              },
+              {
+                path: '/docs/contracts',
+                component: ComponentCreator('/docs/contracts', '0b5'),
                 exact: true,
                 sidebar: "messaging"
               },

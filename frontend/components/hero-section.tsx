@@ -1,5 +1,5 @@
 import React from "react"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { Header } from "./header"
 import { Globe } from "@/components/ui/globe"
 
@@ -447,9 +447,12 @@ export function HeroSection() {
           <p className="text-muted-foreground text-base md:text-base lg:text-lg font-medium leading-relaxed max-w-lg md:max-w-none mx-auto md:mx-0">
             KnotX is the leading interoperability platform connecting traditional finance and the internet economy. Seamlessly bridge assets and data across blockchains and networks.
           </p>
-          <Button className="bg-white text-black hover:bg-gray-100 hover:scale-110 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-transform duration-200">
-            Get Started
-          </Button>
+          <Link
+            href="/demo"
+            className="bg-white text-black hover:bg-gray-100 hover:scale-110 px-8 py-3 rounded-full font-medium text-base shadow-lg transition-transform duration-200 inline-block"
+          >
+            Try KnotX in Action
+          </Link>
         </div>
 
         {/* Globe Component - positioned beside content, showing top visible, bottom cropped */}

@@ -1,0 +1,19 @@
+{
+  "id": "contracts",
+  "title": "Contract Addresses",
+  "description": "This page contains all deployed KnotX contract addresses across different networks.",
+  "source": "@site/docs/contracts.md",
+  "sourceDirName": ".",
+  "slug": "/contracts",
+  "permalink": "/docs/contracts",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "messaging",
+  "previous": {
+    "title": "Tutorial",
+    "permalink": "/docs/tutorial"
+  }
+}

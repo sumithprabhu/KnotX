@@ -6,7 +6,7 @@
 export default {
   "title": "KnotX Documentation",
   "tagline": "Connecting value across networks",
-  "favicon": "img/favicon.ico",
+  "favicon": "img/logo.png",
   "url": "https://knotx.io",
   "baseUrl": "/docs/",
   "organizationName": "knotx",
@@ -56,12 +56,12 @@ export default {
           "items": [
             {
               "label": "Messaging",
-              "to": "/"
+              "to": "/overview"
             }
           ]
         },
         {
-          "title": "Community",
+          "title": "Resources",
           "items": [
             {
               "label": "GitHub",

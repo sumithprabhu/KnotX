@@ -14,7 +14,10 @@
     "test:send-casper": "ts-node src/scripts/test-send-message-casper.ts",
     "test:read-casper": "ts-node src/scripts/test-read-sent-message-casper.ts",
     "test:read-latest-casper": "ts-node src/scripts/test-read-latest-message-casper.ts",
-    "test:execute-casper": "ts-node src/scripts/test-execute-message-casper.ts"
+    "test:execute-casper": "ts-node src/scripts/test-execute-message-casper.ts",
+    "check:events": "ts-node src/scripts/check-events.ts",
+    "read:counter": "ts-node src/scripts/read-counter-casper.ts",
+    "debug:execute-sepolia": "ts-node src/scripts/debug-execute-sepolia.ts"
   },
   "keywords": [
     "relayer",

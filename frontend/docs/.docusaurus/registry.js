@@ -15,4 +15,5 @@ export default {
   "a94703ab": [() => import(/* webpackChunkName: "a94703ab" */ "@theme/DocRoot"), "@theme/DocRoot", require.resolveWeak("@theme/DocRoot")],
   "aba21aa0": [() => import(/* webpackChunkName: "aba21aa0" */ "@generated/docusaurus-plugin-content-docs/default/__plugin.json"), "@generated/docusaurus-plugin-content-docs/default/__plugin.json", require.resolveWeak("@generated/docusaurus-plugin-content-docs/default/__plugin.json")],
   "c239e454": [() => import(/* webpackChunkName: "c239e454" */ "@site/docs/concepts/message-flow.md"), "@site/docs/concepts/message-flow.md", require.resolveWeak("@site/docs/concepts/message-flow.md")],
+  "d9e176b7": [() => import(/* webpackChunkName: "d9e176b7" */ "@site/docs/contracts.md"), "@site/docs/contracts.md", require.resolveWeak("@site/docs/contracts.md")],
   "faa7a9e4": [() => import(/* webpackChunkName: "faa7a9e4" */ "@site/docs/guides/message-format.md"), "@site/docs/guides/message-format.md", require.resolveWeak("@site/docs/guides/message-format.md")],};

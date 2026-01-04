@@ -31,6 +31,11 @@
               "sidebar": "messaging"
             },
             {
+              "id": "contracts",
+              "path": "/docs/contracts",
+              "sidebar": "messaging"
+            },
+            {
               "id": "get-started",
               "path": "/docs/get-started",
               "sidebar": "messaging"

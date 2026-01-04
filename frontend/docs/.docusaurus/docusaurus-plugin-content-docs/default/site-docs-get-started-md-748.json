@@ -1,7 +1,7 @@
 {
   "id": "get-started",
   "title": "Get Started",
-  "description": "Get started with KnotX Messaging in minutes. This guide will walk you through setting up your first cross-chain message.",
+  "description": "Get started with KnotX Messaging in minutes. This guide will walk you through setting up your first cross-chain message using contract interfaces and the relayer system.",
   "source": "@site/docs/get-started.md",
   "sourceDirName": ".",
   "slug": "/get-started",

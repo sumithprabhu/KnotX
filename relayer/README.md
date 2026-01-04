@@ -1,274 +1,135 @@
-# Cross-Chain Relayer Server
+<div align="center">
 
-Production-grade TypeScript relayer server for cross-chain messaging between Ethereum Sepolia, Solana Devnet, and Casper Testnet.
+# KnotX Relayer
 
-## 🏗️ Architecture
+**Cross-Chain Message Relay Service**
 
-### High-Level Flow
+</div>
 
-```
-Source Chain → Listener → Message Router → Destination Sender → Destination Chain
-                     ↓
-              MongoDB (Message & Stats)
-```
+## What Is It?
 
-### Component Overview
+KnotX Relayer is a production-grade cross-chain message relay service that enables seamless communication between different blockchain networks. It acts as a trusted middleware that listens to gateway contracts on source chains and automatically executes messages on destination chains.
 
-1. **Chain Listeners** (`chains/*/listener.ts`)
-   - Monitor source chains for `MessageSent` events
-   - Parse and normalize messages into `RelayMessage` format
-   - Emit messages to the relayer executor
+The relayer currently supports **Casper Testnet** and **Ethereum Sepolia**, enabling users to send messages from one chain to another through gateway contracts.
 
-2. **Message Router** (`relayer/message.router.ts`)
-   - Routes messages to the appropriate destination chain sender
-   - Handles chain-specific sender initialization
+### How It Works
 
-3. **Chain Senders** (`chains/*/sender.ts`)
-   - Send messages to destination gateway contracts
-   - Implement retry logic with exponential backoff
-   - Return relay results with transaction hashes
+1. **User sends message** via gateway contract on source chain
+2. **Relayer detects** the message (via polling or events)
+3. **Relayer routes** message to destination chain
+4. **Relayer executes** message on destination gateway contract
+5. **Gateway calls** receiver contract's `onCall` function
 
-4. **Relay Executor** (`relayer/relay.executor.ts`)
-   - Validates incoming messages
-   - Stores messages in MongoDB
-   - Coordinates routing and status updates
-   - Tracks metrics
+The relayer handles all the complexity of cross-chain communication, including message signing, routing, and execution.
 
-5. **Database Models**
-   - **Message**: Stores all relayed messages with status tracking
-   - **Stats**: Aggregates relayer statistics for explorer UI
+## Features
 
-6. **Services**
-   - **Metrics Service**: Tracks successful/failed relays and per-chain statistics
-   - **Explorer Service**: Provides query interface for explorer UI
+### Multi-Chain Support
+- ✅ **Casper Testnet**: Nonce-based polling for message detection
+- ✅ **Ethereum Sepolia**: Real-time WebSocket event listening
+- ✅ Easy to extend to additional chains
 
-## 📁 Project Structure
+### Efficient Message Processing
+- ✅ **Smart Polling**: Casper listener only processes when nonce increases
+- ✅ **Real-Time Events**: Sepolia uses WebSocket for instant message detection
+- ✅ **Duplicate Prevention**: Database state tracking prevents reprocessing
+
+### Reliability & Security
+- ✅ **Message Signing**: Cryptographic signatures for authentication
+- ✅ **Error Handling**: Retry logic with exponential backoff
+- ✅ **State Tracking**: MongoDB stores all messages and processing state
+- ✅ **Comprehensive Logging**: Structured logging for debugging
+
+### Monitoring & Metrics
+- ✅ **Message Tracking**: All relayed messages stored with status
+- ✅ **Metrics Collection**: Aggregated statistics per chain
+- ✅ **Health Monitoring**: Track success/failure rates
+
+## Future Scope
+
+### Multiple Node Support
+
+The relayer is designed to support multiple nodes for improved reliability, performance, and scalability.
+
+#### Distributed Architecture
+- **Multiple Relayer Instances**: Run multiple relayer nodes for redundancy and load distribution
+- **Load Balancing**: Distribute message processing across nodes
+- **Fault Tolerance**: Automatic failover if a node goes down
+
+#### Node Coordination
+- **Leader Election**: Elect a leader node for coordination tasks
+- **Consensus Mechanism**: Ensure all nodes agree on message processing
+- **State Synchronization**: Keep all nodes in sync with latest state
+
+#### Database & Infrastructure
+- **Database Sharding**: Horizontal scaling with sharded MongoDB collections
+- **Distributed Locking**: Use Redis for distributed locks to prevent duplicate processing
+- **Message Queue**: Implement message queue (RabbitMQ/Kafka) for load distribution
+
+#### Monitoring & Operations
+- **Node Health Endpoints**: REST API for checking node status
+- **Distributed Metrics**: Aggregate metrics from all nodes
+- **Alerting System**: Notify when nodes are down or unhealthy
+- **Monitoring Dashboard**: Real-time view of all nodes and their status
+
+#### Implementation Phases
+
+**Phase 1: Multi-Node Foundation**
+- Node identifier and configuration
+- Distributed locking (Redis)
+- Node health check endpoints
+- Basic node coordination
+
+**Phase 2: Load Distribution**
+- Message queue implementation (RabbitMQ/Kafka)
+- Load balancing logic
+- Leader election mechanism
+- Node discovery
+
+**Phase 3: High Availability**
+- Automatic failover
+- State replication between nodes
+- Monitoring dashboard
+- Alerting system
+
+**Phase 4: Advanced Features**
+- Database sharding
+- Cross-chain message prioritization
+- Dynamic node scaling
+- Performance optimization
+
+### Additional Enhancements
+
+- [ ] **More Chains**: Add support for Solana, Polygon, and other blockchains
+- [ ] **Message Retry**: Automatic retry mechanism with exponential backoff
+- [ ] **REST API**: Query messages and metrics via REST endpoints
+- [ ] **WebSocket API**: Real-time updates for message status
+- [ ] **Explorer UI**: Web interface for viewing messages and statistics
+- [ ] **Message Encryption**: Support for encrypted cross-chain messages
+- [ ] **Rate Limiting**: Per-chain rate limiting for message processing
+- [ ] **Gas Optimization**: Smart gas price management and transaction batching
+- [ ] **Custom Formats**: Support for custom message formats and protocols
+
+## Project Structure
 
 ```
 relayer/
 ├── src/
-│   ├── index.ts                 # Application entry point
-│   ├── app.ts                   # Main application class
-│   ├── config/
-│   │   ├── env.ts              # Environment variable validation (zod)
-│   │   ├── mongo.ts            # MongoDB connection
-│   │   └── chains.ts          # Chain configurations
-│   ├── chains/
-│   │   ├── evm/
-│   │   │   ├── sepolia.listener.ts
-│   │   │   └── sepolia.sender.ts
-│   │   ├── solana/
-│   │   │   ├── solana.listener.ts
-│   │   │   └── solana.sender.ts
-│   │   └── casper/
-│   │       ├── casper.listener.ts
-│   │       └── casper.sender.ts
-│   ├── relayer/
-│   │   ├── message.router.ts   # Routes messages to destination chains
-│   │   ├── relay.executor.ts  # Executes end-to-end relay
-│   │   └── relay.validator.ts # Validates relay messages
-│   ├── db/
-│   │   ├── models/
-│   │   │   ├── Message.ts     # Message schema
-│   │   │   └── Stats.ts       # Statistics schema
-│   │   └── index.ts
-│   ├── services/
-│   │   ├── metrics.service.ts # Metrics tracking
-│   │   └── explorer.service.ts # Explorer data queries
-│   ├── types/
-│   │   ├── message.ts         # Message types
-│   │   └── chains.ts          # Chain types
-│   ├── utils/
-│   │   ├── logger.ts          # Pino logger
-│   │   ├── retry.ts           # Retry utility
-│   │   └── sleep.ts           # Sleep utility
-│   └── constants/
-│       └── chains.ts          # Chain constants
-├── .env.example
-├── package.json
-├── tsconfig.json
-├── eslint.config.js
-└── README.md
+│   ├── chains/          # Chain-specific listeners and executors
+│   ├── relayer/         # Core relay logic (router, executor, validator)
+│   ├── db/              # Database models (Message, ChainState, Metrics)
+│   ├── services/        # Metrics and explorer services
+│   ├── config/          # Configuration (env, chains, mongo)
+│   └── utils/           # Utilities (logger, retry, etc.)
+├── ARCHITECTURE.md      # Detailed architecture documentation
+└── README.md            # This file
 ```
 
-## 🚀 Getting Started
+## Documentation
 
-### Prerequisites
+- **Architecture Details**: See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed technical documentation
+- **Debugging Guide**: See [DEBUG.md](./DEBUG.md) for troubleshooting and debugging with cast commands
 
-- Node.js 18+ 
-- MongoDB instance
-- RPC endpoints for supported chains
-
-### Installation
-
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Copy environment file:
-```bash
-cp .env.example .env
-```
-
-3. Configure environment variables in `.env`:
-   - `MONGODB_URI`: MongoDB connection string
-   - `ETHEREUM_SEPOLIA_RPC_URL`: Ethereum Sepolia RPC endpoint
-   - `SOLANA_DEVNET_RPC_URL`: Solana Devnet RPC endpoint
-   - `CASPER_TESTNET_RPC_URL`: Casper Testnet RPC endpoint
-   - Optional: Private keys for each chain (if sending transactions)
-
-### Development
-
-```bash
-# Run in development mode with hot reload
-npm run dev
-
-# Build for production
-npm run build
-
-# Run production build
-npm start
-
-# Type checking
-npm run type-check
-
-# Linting
-npm run lint
-
-# Format code
-npm run format
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-All environment variables are validated using Zod schema. Required variables:
-
-- `MONGODB_URI`: MongoDB connection string
-- `ETHEREUM_SEPOLIA_RPC_URL`: Ethereum Sepolia RPC URL
-- `SOLANA_DEVNET_RPC_URL`: Solana Devnet RPC URL
-- `CASPER_TESTNET_RPC_URL`: Casper Testnet RPC URL
-
-Optional variables:
-- `NODE_ENV`: Environment (development/production/test)
-- `PORT`: Server port (default: 3000)
-- `LOG_LEVEL`: Logging level (default: info)
-- Private keys for each chain (if sending transactions)
-
-## 📊 Data Models
-
-### Message Schema
-
-```typescript
-{
-  messageId: string;          // Unique message identifier
-  nonce: number;              // Message nonce
-  sourceChain: string;        // Source chain ID
-  destinationChain: string;   // Destination chain ID
-  sourceGateway: string;      // Source gateway address
-  destinationGateway: string; // Destination gateway address
-  payload: string;            // Hex-encoded payload
-  payloadHash: string;        // Hash of payload
-  status: MessageStatus;      // PENDING | DELIVERED | FAILED
-  transactionHash?: string;   // Destination chain tx hash
-  error?: string;             // Error message if failed
-  createdAt: Date;
-  updatedAt: Date;
-  deliveredAt?: Date;
-}
-```
-
-### Stats Schema
-
-```typescript
-{
-  totalMessages: number;
-  successfulRelays: number;
-  failedRelays: number;
-  perChainCounts: {
-    [chainId: string]: {
-      sent: number;
-      received: number;
-      successful: number;
-      failed: number;
-    };
-  };
-  lastUpdated: Date;
-}
-```
-
-## 🔌 Integration Points (TODO)
-
-The following areas are stubbed and need contract integration:
-
-### Chain Listeners
-
-1. **Ethereum Sepolia** (`chains/evm/sepolia.listener.ts`)
-   - TODO: Add contract ABI
-   - TODO: Implement `MessageSent` event listener
-   - TODO: Parse event arguments (sourceChain, destChain, gateway, payload, nonce)
-
-2. **Solana Devnet** (`chains/solana/solana.listener.ts`)
-   - TODO: Add program ID
-   - TODO: Implement account monitoring or log subscription
-   - TODO: Parse account/log data for message details
-
-3. **Casper Testnet** (`chains/casper/casper.listener.ts`)
-   - TODO: Add contract package hash
-   - TODO: Implement block monitoring or SSE subscription
-   - TODO: Parse deploy results for message events
-
-### Chain Senders
-
-1. **Ethereum Sepolia** (`chains/evm/sepolia.sender.ts`)
-   - TODO: Add gateway contract ABI
-   - TODO: Implement `receiveMessage` contract call
-   - TODO: Handle gas estimation and transaction confirmation
-
-2. **Solana Devnet** (`chains/solana/solana.sender.ts`)
-   - TODO: Add program instruction building
-   - TODO: Implement transaction creation and signing
-   - TODO: Handle transaction confirmation
-
-3. **Casper Testnet** (`chains/casper/casper.sender.ts`)
-   - TODO: Add contract entry point details
-   - TODO: Implement deploy creation with runtime args
-   - TODO: Handle deploy signing and submission
-
-## 🛡️ Error Handling
-
-- All chain operations use retry logic with exponential backoff
-- Failed messages are stored with error details
-- Metrics track success/failure rates
-- Graceful shutdown on SIGTERM/SIGINT
-
-## 📝 Logging
-
-Uses Pino for structured logging with:
-- JSON output in production
-- Pretty-printed output in development
-- Configurable log levels
-- Contextual information (messageId, chain, etc.)
-
-## 🔍 Monitoring
-
-The relayer tracks:
-- Total messages processed
-- Successful vs failed relays
-- Per-chain statistics (sent/received/successful/failed)
-- Message status distribution
-
-Use `explorerService` to query statistics for UI dashboards.
-
-## 🧪 Testing
-
-```bash
-# Run tests (when implemented)
-npm test
-```
-
-## 📄 License
+## License
 
 MIT

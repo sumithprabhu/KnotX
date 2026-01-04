@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { CasperWalletWrapper } from "@/components/casper-wallet-wrapper"
 import { RainbowWalletProvider } from "@/components/rainbow-wallet-provider"
+import { Toaster } from "sonner"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -40,6 +41,7 @@ export default function RootLayout({
             </CasperWalletWrapper>
           </RainbowWalletProvider>
         </ThemeProvider>
+        <Toaster position="top-center" richColors />
         <Analytics />
       </body>
     </html>

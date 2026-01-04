@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react"
 import { motion } from "motion/react"
 import Lottie from "lottie-react"
+import { useReadContract } from "wagmi"
+import { parseAbi } from "viem"
 
 // Chain colors
 const CASPER_COLOR = "#6efcd9" // Primary green/teal
@@ -48,7 +50,7 @@ function RacingTrack({ network, count, maxCount }: RacingTrackProps) {
           />
           <span className="text-sm font-semibold text-foreground">{networkName}</span>
         </div>
-        <span className="text-lg font-bold" style={{ color: networkColor }}>
+        <span className="text-lg font-bold text-white">
           {count.toLocaleString()}
         </span>
       </div>
@@ -150,15 +152,141 @@ function RacingTrack({ network, count, maxCount }: RacingTrackProps) {
   )
 }
 
+// UniversalCounter contract ABI (only the counter function)
+const UNIVERSAL_COUNTER_ABI = parseAbi([
+  "function counter() view returns (uint256)"
+])
+
+// UniversalCounter contract address on Sepolia
+const SEPOLIA_UNIVERSAL_COUNTER_ADDRESS = 
+  process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_RECEIVER_ADDRESS || 
+  "0xD3B1c72361f03d5F138C2c768AfdF700266bb39a"
+
+// Casper receiver contract hash (UniversalCounter on Casper)
+const CASPER_RECEIVER_CONTRACT_HASH = 
+  process.env.NEXT_PUBLIC_CASPER_TESTNET_RECEIVER_ADDRESS || 
+  "hash-2ede3272d048e81c344c68f65db55141e1132d70da6443770ac0de443534d36e"
+
+// Casper RPC URL
+const CASPER_RPC_URL = 
+  process.env.NEXT_PUBLIC_CASPER_TESTNET_RPC_URL || 
+  "https://node.testnet.cspr.cloud/rpc"
+
+// Named key for counter in Casper contract
+const KEY_COUNTER = "count"
+
 export function UniversalCounterDisplay() {
   const [casperCount, setCasperCount] = useState(7)
-  const [sepoliaCount, setSepoliaCount] = useState(10)
-
-  // Fixed scores - no incrementing
+  const [isLoadingCasper, setIsLoadingCasper] = useState(false)
+  
+  // Smart polling state
+  const [pollInterval, setPollInterval] = useState(30000) // Default: 30 seconds
+  const [previousCasperCount, setPreviousCasperCount] = useState(7)
+  const [previousSepoliaCount, setPreviousSepoliaCount] = useState(10)
+  const [isFastPolling, setIsFastPolling] = useState(false) // Track if we're in fast polling mode
+  
+  // Listen for transaction events to trigger fast polling
   useEffect(() => {
-    setCasperCount(7)
-    setSepoliaCount(10)
+    const handleTransactionSent = () => {
+      console.log("🔍 Transaction sent - switching to fast polling (10s)")
+      setPollInterval(10000) // Switch to 10 seconds
+      setIsFastPolling(true)
+    }
+
+    // Listen for custom event when transaction is sent
+    window.addEventListener('transaction-sent', handleTransactionSent)
+    
+    return () => {
+      window.removeEventListener('transaction-sent', handleTransactionSent)
+    }
   }, [])
+
+  // Fetch counter from Sepolia contract with smart polling
+  const { data: sepoliaCounter, isLoading: isLoadingSepolia, refetch: refetchSepolia } = useReadContract({
+    address: SEPOLIA_UNIVERSAL_COUNTER_ADDRESS as `0x${string}`,
+    abi: UNIVERSAL_COUNTER_ABI,
+    functionName: "counter",
+    query: {
+      refetchInterval: pollInterval, // Dynamic polling interval
+    },
+  })
+
+  // Convert BigInt to number for display
+  const sepoliaCount = sepoliaCounter ? Number(sepoliaCounter) : 10 // Default to 10 if not loaded yet
+
+  // Detect changes in Sepolia counter
+  useEffect(() => {
+    if (sepoliaCount !== previousSepoliaCount && previousSepoliaCount !== 10) {
+      console.log(`🔍 Sepolia counter changed: ${previousSepoliaCount} → ${sepoliaCount}`)
+      if (isFastPolling) {
+        console.log("🔍 Change detected - switching back to normal polling (30s)")
+        setPollInterval(30000)
+        setIsFastPolling(false)
+      }
+      setPreviousSepoliaCount(sepoliaCount)
+    }
+  }, [sepoliaCount, previousSepoliaCount, isFastPolling])
+
+  // Detect changes in Casper counter and adjust polling
+  useEffect(() => {
+    if (casperCount !== previousCasperCount && previousCasperCount !== 7) {
+      console.log(`🔍 Casper counter changed: ${previousCasperCount} → ${casperCount}`)
+      if (isFastPolling) {
+        console.log("🔍 Change detected - switching back to normal polling (30s)")
+        setPollInterval(30000)
+        setIsFastPolling(false)
+      }
+      setPreviousCasperCount(casperCount)
+    }
+  }, [casperCount, previousCasperCount, isFastPolling])
+
+  // Fetch counter from Casper contract via API route (to avoid CORS)
+  useEffect(() => {
+    const fetchCasperCounter = async () => {
+      try {
+        setIsLoadingCasper(true)
+        
+        // Call Next.js API route to query counter (avoids CORS)
+        const response = await fetch('/api/casper/query-counter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contractHash: CASPER_RECEIVER_CONTRACT_HASH,
+          }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          const errorMessage = errorData.error || errorData.err || 'Failed to fetch counter'
+          const errorCode = errorData.code ? `Code: ${errorData.code}` : ''
+          throw new Error(errorCode ? `${errorCode}, err: ${errorMessage}` : errorMessage)
+        }
+
+        const data = await response.json()
+        if (data.counter !== undefined) {
+          const newCount = data.counter
+          setCasperCount(newCount)
+          console.log("🔍 Casper counter fetched:", newCount)
+        } else {
+          console.warn("⚠️ Counter not found in response")
+        }
+        setIsLoadingCasper(false)
+      } catch (error) {
+        console.error("❌ Failed to fetch Casper counter:", error)
+        setIsLoadingCasper(false)
+      }
+    }
+
+    // Fetch immediately
+    fetchCasperCounter()
+    
+    // Set up interval with dynamic polling
+    const interval = setInterval(fetchCasperCounter, pollInterval)
+    
+    return () => clearInterval(interval)
+  }, [pollInterval])
 
   // Calculate max count for positioning (largest count reaches 70% of track)
   const maxCount = Math.max(casperCount, sepoliaCount, 1) // Ensure at least 1 to avoid division by zero

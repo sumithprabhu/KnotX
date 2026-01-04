@@ -4,9 +4,11 @@ import React from "react"
 import { Header } from "@/components/header"
 import { UniversalCounterSwap } from "@/components/universal-counter-swap"
 import { UniversalCounterDisplay } from "@/components/universal-counter-display"
+import { WalletConnectionProvider } from "@/components/wallet-connection-context"
 
 export default function DemoPage() {
   return (
+    <WalletConnectionProvider>
     <div className="h-screen w-screen bg-background relative overflow-hidden">
       {/* SVG Background - same as hero section */}
       <div className="absolute inset-0 z-0">
@@ -451,6 +453,7 @@ export default function DemoPage() {
         </div>
       </div>
     </div>
+    </WalletConnectionProvider>
   )
 }
 

@@ -7,7 +7,7 @@ const {themes} = require('prism-react-renderer');
 const config = {
   title: 'KnotX Documentation',
   tagline: 'Connecting value across networks',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/logo.png',
 
   // Set the production url of your site here
   url: 'https://knotx.io',
@@ -71,12 +71,12 @@ const config = {
             items: [
               {
                 label: 'Messaging',
-                to: '/',
-              },
+                to: '/overview',
+              }
             ],
           },
           {
-            title: 'Community',
+            title: 'Resources',
             items: [
               {
                 label: 'GitHub',

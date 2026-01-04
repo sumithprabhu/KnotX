@@ -1,15 +1,15 @@
 {
-  "/docs/-a42": {
+  "/docs/-318": {
     "__comp": "5e95c892",
     "__context": {
       "plugin": "aba21aa0"
     }
   },
-  "/docs/-0fa": {
+  "/docs/-323": {
     "__comp": "a7bd4aaa",
     "__props": "11b43341"
   },
-  "/docs/-9c9": {
+  "/docs/-21b": {
     "__comp": "a94703ab"
   },
   "/docs/concepts/architecture-c76": {
@@ -27,6 +27,10 @@
   "/docs/concepts/security-model-761": {
     "__comp": "17896441",
     "content": "58accb53"
+  },
+  "/docs/contracts-0b5": {
+    "__comp": "17896441",
+    "content": "d9e176b7"
   },
   "/docs/get-started-053": {
     "__comp": "17896441",

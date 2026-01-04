@@ -17,11 +17,34 @@ export class RelayValidator {
       }
 
       // Validate source chain
-      if (!message.sourceChain || !Object.values(ChainId).includes(message.sourceChain as ChainId)) {
-        return {
-          valid: false,
-          error: `Invalid source chain: ${message.sourceChain}`,
-        };
+      // Allow chain IDs in format "chain-{number}" for unknown chains, but prefer known chains
+      if (!message.sourceChain) {
+        return { valid: false, error: 'Source chain is required' };
+      }
+      
+      // If it's a known chain ID, validate it
+      if (!Object.values(ChainId).includes(message.sourceChain as ChainId)) {
+        // If it's in "chain-{number}" format, try to extract and validate
+        if (message.sourceChain.startsWith('chain-')) {
+          const chainNum = parseInt(message.sourceChain.replace('chain-', ''));
+          // If it's a valid number, allow it but log a warning
+          if (isNaN(chainNum)) {
+            return {
+              valid: false,
+              error: `Invalid source chain format: ${message.sourceChain}`,
+            };
+          }
+          // For now, allow unknown chain IDs but log
+          logger.warn(
+            { sourceChain: message.sourceChain, chainNum },
+            'Unknown source chain ID, allowing but may cause issues'
+          );
+        } else {
+          return {
+            valid: false,
+            error: `Invalid source chain: ${message.sourceChain}`,
+          };
+        }
       }
 
       // Validate destination chain

@@ -281,6 +281,26 @@ export class CasperListener extends EventEmitter {
         messageBytes = bytes;
       }
       
+      // Check if messageBytes might have CLValue encoding (length prefix)
+      // CLValue List<U8> format: first 4 bytes might be length
+      if (messageBytes.length >= 4) {
+        const possibleLength = Buffer.from(messageBytes.slice(0, 4)).readUInt32BE(0);
+        // If first 4 bytes look like a reasonable length (less than total length and reasonable size)
+        if (possibleLength > 0 && possibleLength < messageBytes.length && possibleLength < 10000) {
+          logger.debug(
+            { 
+              nonce, 
+              possibleLength, 
+              totalLength: messageBytes.length,
+              firstBytes: Buffer.from(messageBytes.slice(0, 8)).toString('hex'),
+            },
+            'Detected possible CLValue length prefix, extracting actual bytes'
+          );
+          // Extract actual message bytes (skip length prefix)
+          messageBytes = messageBytes.slice(4);
+        }
+      }
+      
       return messageBytes.length > 0 ? messageBytes : null;
     } catch (error: any) {
       logger.error({ error: error.message, nonce }, 'Failed to get message bytes');
@@ -389,20 +409,64 @@ export class CasperListener extends EventEmitter {
         return null;
       }
       
+      // Log raw message bytes for debugging
+      logger.info(
+        { 
+          nonce, 
+          messageLength: messageBytes.length,
+          messageBytesHex: Buffer.from(messageBytes).toString('hex'),
+          firstBytes: Buffer.from(messageBytes.slice(0, Math.min(20, messageBytes.length))).toString('hex'),
+        },
+        '📥 Raw message bytes received from Casper'
+      );
+      
       const parsed = this.parseMessageBytes(messageBytes);
       if (!parsed) {
-        logger.warn({ nonce }, 'Failed to parse message bytes');
+        logger.warn({ nonce, messageLength: messageBytes.length }, 'Failed to parse message bytes');
         return null;
       }
+      
+      // Log parsed values for debugging
+      logger.info(
+        {
+          nonce,
+          srcChainId: parsed.srcChainId,
+          dstChainId: parsed.dstChainId,
+          srcChainIdHex: `0x${parsed.srcChainId.toString(16).padStart(8, '0')}`,
+          dstChainIdHex: `0x${parsed.dstChainId.toString(16).padStart(8, '0')}`,
+          srcGatewayHex: Buffer.from(parsed.srcGateway).toString('hex'),
+          srcGatewayLength: parsed.srcGateway.length,
+          receiverHex: Buffer.from(parsed.receiver).toString('hex'),
+          receiverLength: parsed.receiver.length,
+          payloadHex: Buffer.from(parsed.payload).toString('hex'),
+          payloadLength: parsed.payload.length,
+          payloadAsString: Buffer.from(parsed.payload).toString('utf8'),
+        },
+        '📋 Parsed message values from Casper'
+      );
       
       // Convert to RelayMessage format
       const payloadHex = Buffer.from(parsed.payload).toString('hex');
       const payloadHash = createHash('sha256').update(parsed.payload).digest('hex');
       
-      // Map chain IDs
-      const sourceChain = parsed.srcChainId === 3 ? ChainId.CASPER_TESTNET : 
-                         parsed.srcChainId === 11155111 ? ChainId.ETHEREUM_SEPOLIA : 
-                         `chain-${parsed.srcChainId}`;
+      // Map chain IDs - Since this is from Casper, sourceChain should always be Casper
+      // If srcChainId is not 3, log a warning but still use Casper as source
+      let sourceChain: string;
+      if (parsed.srcChainId === 3) {
+        sourceChain = ChainId.CASPER_TESTNET;
+      } else {
+        logger.warn(
+          { 
+            parsedSrcChainId: parsed.srcChainId,
+            expectedSrcChainId: 3,
+            srcChainIdHex: `0x${parsed.srcChainId.toString(16).padStart(8, '0')}`,
+            first4Bytes: Buffer.from(messageBytes.slice(0, 4)).toString('hex'),
+          },
+          '⚠️  Unexpected srcChainId, defaulting to Casper Testnet'
+        );
+        // Default to Casper since we're reading from Casper gateway
+        sourceChain = ChainId.CASPER_TESTNET;
+      }
       
       const destinationChain = parsed.dstChainId === 3 ? ChainId.CASPER_TESTNET : 
                                parsed.dstChainId === 11155111 ? ChainId.ETHEREUM_SEPOLIA : 

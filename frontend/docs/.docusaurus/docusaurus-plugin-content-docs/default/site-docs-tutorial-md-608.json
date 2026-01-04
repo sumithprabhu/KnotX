@@ -1,7 +1,7 @@
 {
   "id": "tutorial",
-  "title": "Tutorial",
-  "description": "Tutorial content will be added here...",
+  "title": "Universal Counter Tutorial",
+  "description": "This tutorial demonstrates how to build a cross-chain counter application using KnotX Messaging. The counter can be incremented from any supported chain, and the value is synchronized across all chains.",
   "source": "@site/docs/tutorial.md",
   "sourceDirName": ".",
   "slug": "/tutorial",
@@ -15,5 +15,9 @@
   "previous": {
     "title": "Relayer System",
     "permalink": "/docs/concepts/relayer-system"
+  },
+  "next": {
+    "title": "Contracts",
+    "permalink": "/docs/contracts"
   }
 }

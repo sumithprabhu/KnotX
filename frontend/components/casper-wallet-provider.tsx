@@ -312,11 +312,21 @@ export function CasperWalletProvider({ children }: { children: React.ReactNode }
   }, [provider])
 
   // Direct sign method
-  const sign = useCallback(async (deployJson: string, signingPublicKeyHex: string): Promise<any> => {
+  // Accept both string and object (matching CSPR.click SDK behavior)
+  const sign = useCallback(async (deployJson: string | object, signingPublicKeyHex: string): Promise<any> => {
     if (!provider) {
       throw new Error("Casper Wallet not available")
     }
-    return await provider.sign(deployJson, signingPublicKeyHex)
+    // Convert object to string if needed (wallet expects string)
+    const deployJsonString = typeof deployJson === 'string' ? deployJson : JSON.stringify(deployJson)
+    
+    try {
+      const result = await provider.sign(deployJsonString, signingPublicKeyHex)
+      return result
+    } catch (signError: any) {
+      console.error("❌ Wallet sign failed:", signError?.message || signError)
+      throw signError
+    }
   }, [provider])
 
   // Direct signMessage method

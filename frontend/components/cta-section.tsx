@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export function CTASection() {
   return (
@@ -109,12 +109,12 @@ export function CTASection() {
             Join developers and teams building the next generation of interoperable applications. Connect your projects across blockchains with KnotX's secure, reliable protocol.
           </p>
         </div>
-        <Button
-          className="px-[30px] py-2 bg-secondary text-secondary-foreground text-base font-medium leading-6 rounded-[99px] shadow-[0px_0px_0px_4px_rgba(255,255,255,0.13)] hover:bg-secondary/90 transition-all duration-200"
-          size="lg"
+        <Link
+          href="/docs/overview"
+          className="px-[30px] py-2 bg-secondary text-secondary-foreground text-base font-medium leading-6 rounded-[99px] shadow-[0px_0px_0px_4px_rgba(255,255,255,0.13)] hover:bg-secondary/90 transition-all duration-200 inline-block"
         >
           Get Started
-        </Button>
+        </Link>
       </div>
     </section>
   )
