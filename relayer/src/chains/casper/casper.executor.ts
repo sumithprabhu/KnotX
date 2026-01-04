@@ -13,8 +13,9 @@ import {
 import { ChainId } from '../../types/chains';
 import { RelayMessage, RelayResult } from '../../types/message';
 import { getChainConfig } from '../../config/chains';
-import { env } from '../../config/env';
+import { env, getCasperRpcEndpoints } from '../../config/env';
 import { logger } from '../../utils/logger';
+import { CasperRpcManager } from '../../utils/casper-rpc-manager';
 import * as fs from 'fs';
 import * as path from 'path';
 import { signSync, getPublicKey, recoverPublicKey, Point } from '@noble/secp256k1';
@@ -24,7 +25,7 @@ import { signSync, getPublicKey, recoverPublicKey, Point } from '@noble/secp256k
  * Executes messages on Casper gateway contract
  */
 export class CasperExecutor {
-  private rpcClient: RpcClient | null = null;
+  private rpcManager: CasperRpcManager;
   private publicKey: PublicKey | null = null;
   private privateKey: PrivateKey | null = null;
   private readonly CONTRACT_HASH: string;
@@ -32,23 +33,15 @@ export class CasperExecutor {
 
   constructor() {
     this.CONTRACT_HASH = env.CASPER_GATEWAY || 'hash-4ce6b9ec80fde0158f7ab13f37cff883660048c1d457e9e48130cc884ce83073';
-  }
-
-  /**
-   * Create RPC client with Authorization header
-   */
-  private createRpcClient(): RpcClient {
-    const config = getChainConfig(ChainId.CASPER_TESTNET);
-    const httpHandler = new HttpHandler(config.rpcUrl);
     
-    if (env.CASPER_API_KEY) {
-      httpHandler.setCustomHeaders({
-        Authorization: env.CASPER_API_KEY,
-        'Content-Type': 'application/json',
-      });
-    }
-
-    return new RpcClient(httpHandler);
+    // Initialize RPC manager with endpoints from env
+    const endpoints = getCasperRpcEndpoints();
+    this.rpcManager = new CasperRpcManager(endpoints);
+    
+    logger.info(
+      { endpointCount: endpoints.length },
+      'Casper executor initialized with RPC endpoint rotation'
+    );
   }
 
   /**
@@ -187,7 +180,12 @@ export class CasperExecutor {
    */
   async initialize(): Promise<void> {
     try {
-      this.rpcClient = this.createRpcClient();
+      // Test RPC connection
+      await this.rpcManager.executeWithRotation(async (rpcClient) => {
+        // Just verify connection works
+        return rpcClient;
+      });
+      
       const { publicKey, privateKey } = await this.getKeyPair();
       this.publicKey = publicKey;
       this.privateKey = privateKey;
@@ -209,7 +207,7 @@ export class CasperExecutor {
    * Execute message on Casper gateway contract
    */
   async executeMessage(message: RelayMessage): Promise<RelayResult> {
-    if (!this.rpcClient || !this.publicKey || !this.privateKey) {
+    if (!this.publicKey || !this.privateKey) {
       await this.initialize();
     }
 
@@ -298,8 +296,10 @@ export class CasperExecutor {
       const transactionHash = transaction.hash.toHex();
       logger.info({ transactionHash }, 'Transaction signed, sending to network...');
 
-      // Send transaction
-      await this.rpcClient!.putTransaction(transaction);
+      // Send transaction with rotation
+      await this.rpcManager.executeWithRotation(async (rpcClient) => {
+        await rpcClient.putTransaction(transaction);
+      });
       
       logger.info({ transactionHash }, '✅ Transaction sent successfully!');
 
@@ -315,7 +315,9 @@ export class CasperExecutor {
         await new Promise((resolve) => setTimeout(resolve, 5000));
         
         try {
-          const transactionInfo = await this.rpcClient!.getTransactionByDeployHash(deployHash);
+          const transactionInfo = await this.rpcManager.executeWithRotation(async (rpcClient) => {
+            return await rpcClient.getTransactionByDeployHash(deployHash);
+          });
           
           if (transactionInfo?.executionInfo) {
             const executionInfo = transactionInfo.executionInfo;

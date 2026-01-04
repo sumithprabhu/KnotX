@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { RpcClient, HttpHandler } from "casper-js-sdk"
-
-// Casper RPC URL and API key (matching put-deploy route)
-const CASPER_RPC_URL = process.env.CASPER_RPC_URL || 'https://node.testnet.cspr.cloud/rpc'
-const CASPER_API_KEY = process.env.CASPER_API_KEY || '019b7cfa-8db3-7a21-89b3-e3a0bc3f3340' // Default test key from relayer
+import { executeWithRpcClientRotation } from "@/lib/casper-rpc-client-rotation"
 
 // Named key for counter in Casper contract
 const KEY_COUNTER = "count"
@@ -25,20 +21,11 @@ export async function POST(request: NextRequest) {
     // CONTRACT_HASH = 'hash-2ede3272d048e81c344c68f65db55141e1132d70da6443770ac0de443534d36e'
     // The relayer passes it WITH "hash-" prefix, so we should keep it
     
-    // Create RPC client with API key (matching put-deploy route and relayer)
-    const httpHandler = new HttpHandler(CASPER_RPC_URL)
-    if (CASPER_API_KEY) {
-      httpHandler.setCustomHeaders({
-        Authorization: CASPER_API_KEY,
-        'Content-Type': 'application/json',
-      })
-    }
-    const rpcClient = new RpcClient(httpHandler)
-
-    // Query the counter from contract state (matching relayer exactly)
-    // Pass contractHash as-is (with "hash-" prefix) - matching relayer line 57
+    // Query the counter from contract state with rotation
     console.log("🔍 Querying counter from contract:", contractHash, "key:", KEY_COUNTER)
-    const queryResult = await rpcClient.queryLatestGlobalState(contractHash, [KEY_COUNTER])
+    const queryResult = await executeWithRpcClientRotation(async (rpcClient) => {
+      return await rpcClient.queryLatestGlobalState(contractHash, [KEY_COUNTER])
+    })
     console.log("🔍 Query result received:", queryResult ? "success" : "failed")
 
     // Parse the counter value

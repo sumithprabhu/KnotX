@@ -1,31 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// Use the same RPC endpoint as relayer (requires API key)
-const CASPER_RPC_URL = process.env.CASPER_RPC_URL || 'https://node.testnet.cspr.cloud/rpc'
-const CASPER_API_KEY = process.env.CASPER_API_KEY || '019b7cfa-8db3-7a21-89b3-e3a0bc3f3340' // Default test key from relayer
+import { fetchWithRotation } from '@/lib/casper-rpc-rotation'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Prepare headers
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    }
+    console.log('Proxying deploy to Casper RPC with rotation')
     
-    // Add API key if available (matching relayer format: direct API key, not Bearer token)
-    if (CASPER_API_KEY) {
-      headers['Authorization'] = CASPER_API_KEY
-    }
-    
-    console.log('Proxying deploy to Casper RPC:', CASPER_RPC_URL)
-    
-    // Forward the RPC request to Casper node
-    const response = await fetch(CASPER_RPC_URL, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    })
+    // Forward the RPC request to Casper node with rotation
+    const response = await fetchWithRotation(body)
 
     if (!response.ok) {
       const errorText = await response.text()

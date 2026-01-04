@@ -5,8 +5,9 @@ import {
 import { ChainId } from '../../types/chains';
 import { RelayMessage } from '../../types/message';
 import { getChainConfig } from '../../config/chains';
-import { env } from '../../config/env';
+import { env, getCasperRpcEndpoints } from '../../config/env';
 import { logger } from '../../utils/logger';
+import { CasperRpcManager } from '../../utils/casper-rpc-manager';
 import { EventEmitter } from 'events';
 import { ChainState } from '../../db/models/ChainState';
 import { createHash } from 'crypto';
@@ -15,7 +16,7 @@ import { createHash } from 'crypto';
  * Casper Testnet listener - polls for new messages by nonce
  */
 export class CasperListener extends EventEmitter {
-  private rpcClient: RpcClient | null = null;
+  private rpcManager: CasperRpcManager;
   private isListening = false;
   private pollingInterval: NodeJS.Timeout | null = null;
   private readonly POLL_INTERVAL_MS = 10000; // Poll every 10 seconds
@@ -26,23 +27,15 @@ export class CasperListener extends EventEmitter {
   constructor() {
     super();
     this.CONTRACT_HASH = env.CASPER_GATEWAY || 'hash-4ce6b9ec80fde0158f7ab13f37cff883660048c1d457e9e48130cc884ce83073';
-  }
-
-  /**
-   * Create RPC client with Authorization header
-   */
-  private createRpcClient(): RpcClient {
-    const config = getChainConfig(ChainId.CASPER_TESTNET);
-    const httpHandler = new HttpHandler(config.rpcUrl);
     
-    if (env.CASPER_API_KEY) {
-      httpHandler.setCustomHeaders({
-        Authorization: env.CASPER_API_KEY,
-        'Content-Type': 'application/json',
-      });
-    }
-
-    return new RpcClient(httpHandler);
+    // Initialize RPC manager with endpoints from env
+    const endpoints = getCasperRpcEndpoints();
+    this.rpcManager = new CasperRpcManager(endpoints);
+    
+    logger.info(
+      { endpointCount: endpoints.length },
+      'Casper listener initialized with RPC endpoint rotation'
+    );
   }
 
   /**
@@ -50,7 +43,11 @@ export class CasperListener extends EventEmitter {
    */
   async initialize(): Promise<void> {
     try {
-      this.rpcClient = this.createRpcClient();
+      // Test RPC connection
+      await this.rpcManager.executeWithRotation(async (rpcClient) => {
+        return rpcClient;
+      });
+      
       logger.info(
         { chain: ChainId.CASPER_TESTNET, contractHash: this.CONTRACT_HASH },
         'Casper Testnet listener initialized'
@@ -65,12 +62,10 @@ export class CasperListener extends EventEmitter {
    * Get current nonce from contract
    */
   private async getCurrentNonce(): Promise<number> {
-    if (!this.rpcClient) {
-      throw new Error('RPC client not initialized');
-    }
-
     try {
-      const queryResult = await this.rpcClient.queryLatestGlobalState(this.CONTRACT_HASH, [this.KEY_NONCE]);
+      const queryResult = await this.rpcManager.executeWithRotation(async (rpcClient) => {
+        return await rpcClient.queryLatestGlobalState(this.CONTRACT_HASH, [this.KEY_NONCE]);
+      });
       
       if (queryResult.storedValue?.clValue) {
         const clValue = queryResult.storedValue.clValue;
@@ -94,12 +89,10 @@ export class CasperListener extends EventEmitter {
    * Get messages dictionary URef from contract
    */
   private async getMessagesDictionaryURef(): Promise<string> {
-    if (!this.rpcClient) {
-      throw new Error('RPC client not initialized');
-    }
-
     try {
-      const queryResult = await this.rpcClient.queryLatestGlobalState(this.CONTRACT_HASH, []);
+      const queryResult = await this.rpcManager.executeWithRotation(async (rpcClient) => {
+        return await rpcClient.queryLatestGlobalState(this.CONTRACT_HASH, []);
+      });
       
       if (queryResult.rawJSON) {
         const raw = typeof queryResult.rawJSON === 'string' 
@@ -138,18 +131,7 @@ export class CasperListener extends EventEmitter {
    * Get state root hash from latest block
    */
   private async getStateRootHash(): Promise<string> {
-    const config = getChainConfig(ChainId.CASPER_TESTNET);
-    const rpcUrl = config.rpcUrl;
     const uniqueId = Date.now();
-    
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache',
-    };
-    
-    if (env.CASPER_API_KEY) {
-      headers['Authorization'] = env.CASPER_API_KEY;
-    }
     
     const statusRequest = {
       jsonrpc: '2.0',
@@ -158,11 +140,7 @@ export class CasperListener extends EventEmitter {
       params: {}
     };
     
-    const statusResponse = await fetch(rpcUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(statusRequest),
-    });
+    const statusResponse = await this.rpcManager.fetchWithRotation(statusRequest);
     
     if (!statusResponse.ok) {
       const text = await statusResponse.text();
@@ -185,11 +163,7 @@ export class CasperListener extends EventEmitter {
       params: latestBlockHash ? { block_identifier: { Hash: latestBlockHash } } : {}
     };
     
-    const blockResponse = await fetch(rpcUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(blockRequest),
-    });
+    const blockResponse = await this.rpcManager.fetchWithRotation(blockRequest);
     
     if (!blockResponse.ok) {
       const text = await blockResponse.text();
@@ -217,9 +191,6 @@ export class CasperListener extends EventEmitter {
    * Get message bytes by nonce
    */
   private async getMessageBytes(stateRootHash: string, dictionaryURef: string, nonce: number): Promise<Uint8Array | null> {
-    const config = getChainConfig(ChainId.CASPER_TESTNET);
-    const rpcUrl = config.rpcUrl;
-    
     try {
       const dictionaryItemKey = nonce.toString();
       
@@ -238,20 +209,7 @@ export class CasperListener extends EventEmitter {
         }
       };
       
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (env.CASPER_API_KEY) {
-        headers['Authorization'] = env.CASPER_API_KEY;
-      }
-      
-      const response = await fetch(rpcUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(rpcRequest),
-      });
-      
+      const response = await this.rpcManager.fetchWithRotation(rpcRequest);
       const data = await response.json() as any;
       
       if (data.error) {
@@ -500,10 +458,6 @@ export class CasperListener extends EventEmitter {
    */
   private async pollForMessages(): Promise<void> {
     try {
-      if (!this.rpcClient) {
-        await this.initialize();
-      }
-
       // Get last processed nonce from database
       let chainState = await ChainState.findOne({ chainId: ChainId.CASPER_TESTNET });
       if (!chainState) {
@@ -568,9 +522,7 @@ export class CasperListener extends EventEmitter {
       return;
     }
 
-    if (!this.rpcClient) {
-      await this.initialize();
-    }
+    await this.initialize();
 
     this.isListening = true;
     logger.info('Starting Casper Testnet listener (nonce-based polling)');
