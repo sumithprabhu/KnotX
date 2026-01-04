@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { ArrowDownUp, Wallet } from "lucide-react"
 import { useCasperWallet } from "@/components/casper-wallet-provider"
 import { useAccount, useConnect, useWriteContract, useWaitForTransactionReceipt } from "wagmi"
@@ -96,8 +95,7 @@ export function UniversalCounterSwap() {
   const { address: evmAddress, isConnected: isEVMConnected } = useAccount()
   const { connect, connectors } = useConnect()
 
-  // State for increase counter
-  const [incrementValue, setIncrementValue] = useState("1")
+  // Always increment by 1
   const [isLoading, setIsLoading] = useState(false)
 
   // Wagmi hooks for EVM contract interaction
@@ -253,11 +251,7 @@ export function UniversalCounterSwap() {
       return
     }
 
-    const value = parseInt(incrementValue)
-    if (isNaN(value) || value <= 0) {
-      toast.warning("Please enter a valid positive number")
-      return
-    }
+    const value = 1 // Always increment by 1
 
     setIsLoading(true)
 
@@ -749,24 +743,14 @@ export function UniversalCounterSwap() {
           animate={{ opacity: 1, y: 0 }}
           className="mt-6 pt-6 border-t border-border"
         >
-          <div className="flex flex-col sm:flex-row gap-4 items-end">
-            <div className="flex-1 w-full">
-              <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                Increase Counter by
-              </label>
-              <Input
-                type="number"
-                min="1"
-                value={incrementValue}
-                onChange={(e) => setIncrementValue(e.target.value)}
-                placeholder="1"
-                className="w-full"
-              />
-            </div>
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-sm font-medium text-muted-foreground text-center">
+              Increase Destination Counter by 1
+            </p>
             <Button
               onClick={handleIncrease}
               disabled={isLoading || isPending || isConfirming}
-              className="bg-[#6efcd9] text-black hover:bg-[#5ee8c9] font-medium min-w-[120px]"
+              className="bg-[#6efcd9] text-black hover:bg-[#5ee8c9] font-medium px-8 py-2 rounded-full transition-colors w-full"
             >
               {isLoading || isPending || isConfirming ? "Processing..." : "Increase"}
             </Button>
