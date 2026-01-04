@@ -75,15 +75,16 @@ Next.js web application providing:
 
 ## Getting Started
 
-1. **Explore the Frontend**: Visit the [demo page](http://localhost:3000/demo) to try the Universal Counter
-2. **Read the Documentation**: Check out the [docs](http://localhost:3000/docs/overview) for detailed guides
+1. **Explore the Frontend**: Visit the [demo page](https://tryknotx.vercel.app/demo) to try the Universal Counter
+2. **Read the Documentation**: Check out the [docs](https://tryknotx.vercel.app/docs/overview) for detailed guides
 3. **Deploy Contracts**: See the [contracts folder](./contracts/) for smart contract code
 4. **Run the Relayer**: Follow the [relayer README](./relayer/README.md) to set up the message relay service
 
 ## Links
 
-- **Frontend Demo**: [http://localhost:3000/demo](http://localhost:3000/demo)
-- **Documentation**: [http://localhost:3000/docs/overview](http://localhost:3000/docs/overview)
+- **Website**: [https://tryknotx.vercel.app](https://tryknotx.vercel.app)
+- **Frontend Demo**: [https://tryknotx.vercel.app/demo](https://tryknotx.vercel.app/demo)
+- **Documentation**: [https://tryknotx.vercel.app/docs/overview](https://tryknotx.vercel.app/docs/overview)
 - **Contract Addresses**: See [contracts README](./contracts/README.md)
 
 ---
