@@ -56,8 +56,8 @@ export function BentoSection() {
       icon: Server,
     },
     {
-      title: "Developer-friendly SDKs",
-      description: "Integrate KnotX into your applications with comprehensive tools and documentation. Support for all major programming languages and frameworks.",
+      title: "Contract interfaces & relayer",
+      description: "Integrate KnotX using standard contract interfaces. Your contracts implement IKnotXReceiver to receive messages, and interact with gateway contracts. A decentralized relayer network handles message routing between chains.",
       icon: Wrench,
     },
     {

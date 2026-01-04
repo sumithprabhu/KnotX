@@ -23,7 +23,7 @@ const faqData = [
   {
     question: "How do I integrate KnotX into my application?",
     answer:
-      "KnotX provides comprehensive SDKs and developer tools for easy integration. You can use our JavaScript, Python, or Rust SDKs to send messages and execute cross-chain operations. Our documentation includes code examples, API references, and step-by-step guides to get you started quickly.",
+      "KnotX uses contract interfaces that you can integrate directly into your smart contracts. Your contracts interact with gateway contracts deployed on each chain, and a relayer system handles message routing. Our documentation includes contract interfaces, code examples, and step-by-step guides. You'll implement the IKnotXReceiver interface in your contracts to receive messages, and call the gateway's sendMessage function to send messages across chains.",
   },
   {
     question: "What are the costs for using KnotX?",
